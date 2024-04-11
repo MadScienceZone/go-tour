@@ -6,6 +6,7 @@
 \usepackage{xeCJK}
 \newcommand\identifier[1]{{\color{green!70!black}\z{#1}}}
 \newcommand\keyword[1]{{\color{blue}\z{#1}}}
+\newcommand\blocked[1]{{\color{red}\z{#1}}}
 \lstset{
 	language=Go,
 	basicstyle=\ttfamily,
@@ -229,7 +230,18 @@ const (
 )
 \end{lstlisting}
 \end{onlyenv}
-\begin{onlyenv}<4>
+\end{frame}
+\begin{frame}[fragile]{``Factored'' Notation and iota Expressions}
+\begin{lstlisting}
+type MessageType byte
+const (
+    ServerCommand MessageType = 0x01
+    ServerReply   MessageType = 0x02
+    ServerError   MessageType = 0x04
+    UrgentMessage MessageType = 0x08
+)
+\end{lstlisting}
+\vfill\strut
 \begin{lstlisting}
 type MessageType byte
 const (
@@ -239,6 +251,142 @@ const (
     UrgentMessage 
 )
 \end{lstlisting}
+\end{frame}
+\section[Concurrency]{Concurrency}
+\subsection{Thread-Safe Memory Access}
+\begin{frame}[fragile]{Global ID Generation (Na\"\i ve)}
+\begin{lstlisting}
+type GameState struct {
+    NextMessageID int
+}
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+var gameServer GameState
+
+gameServer.NextMessageID++
+client.ID = gameServer.NextMessageID
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Global ID Generation (Mutex)}
+\begin{onlyenv}<1>
+\begin{lstlisting}
+type GameState struct {
+    NextMessageID int
+    Lock          sync.Mutex
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<2->
+\begin{lstlisting}
+type GameState struct {
+    NextMessageID int
+    Lock          sync.RWMutex
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<3-4>
+\begin{lstlisting}
+func (state *GameState) GetNextID() int {
+    state.Lock.Lock()
+    state.NextMessageID++
+    nextID := state.MessageID
+    state.Lock.Unlock()
+    return nextID
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<5>
+\begin{lstlisting}
+func (state *GameState) GetNextID() int {
+    state.Lock.Lock()
+    defer state.Lock.Unlock()
+
+    state.NextMessageID++
+    return state.NextMessageID
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<4->
+\begin{lstlisting}
+client.ID = gameServer.GetNextID()
+\end{lstlisting}
 \end{onlyenv}
 \end{frame}
+
+\begin{frame}[fragile]{Global ID Generation (Channel)}
+\begin{lstlisting}
+func serveMessageIDs(c chan int) int {
+    var id int
+    for {
+        c <- id
+        c++
+    }
+}
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+IDSource := make(chan int)
+go serveMessageIDs(IDSource)
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+client.ID = <-IDSource
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Channels}
+\begin{lstlisting}
+ch := make(chan byte)
+\end{lstlisting}
+\begin{onlyenv}<2-3>
+\begin{lstlisting}
+fmt.Println("Writing to channel")
+
+ch <- 42
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<4>
+\begin{lstlisting}
+fmt.Println("Writing to channel")
+\end{lstlisting}
+\blocked{ch <- 42\qquad\qquad// DEADLOCKED!}
+\end{onlyenv}
+\begin{onlyenv}<3->
+\begin{lstlisting}
+fmt.Println("Reading from channel")
+x := <-ch
+fmt.Println("Read", x, "from channel")
+\end{lstlisting}
+\end{onlyenv}
+\end{frame}
+
+\begin{frame}[fragile]{Channels}
+\begin{lstlisting}
+ch := make(chan byte)
+go func(c chan byte) {
+    x := <-c
+    fmt.Println("Read", x, "from channel")
+}(ch)
+
+fmt.Println("Writing to channel")
+ch <- 42
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Channels}
+\begin{lstlisting}
+ch := make(chan byte, 1)
+
+fmt.Println("Writing to channel")
+ch <- 42
+
+fmt.Println("Reading from channel")
+x := <-ch
+fmt.Println("Read", x, "from channel")
+\end{lstlisting}
+\end{frame}
+
+
 \end{document}
