@@ -4,6 +4,8 @@
 \newcommand\z[1]{\texttt{#1}}
 \usepackage{listings}
 \usepackage{xeCJK}
+\newcommand\identifier[1]{{\color{green!70!black}\z{#1}}}
+\newcommand\keyword[1]{{\color{blue}\z{#1}}}
 \lstset{
 	language=Go,
 	basicstyle=\ttfamily,
@@ -48,7 +50,7 @@
 		\item \dots\ but cleaned up and streamlined a bit.
 			\end{itemize}
 		\pause
-		\item Dreamed up while waiting on a 45-minute C++ compile
+	\item Dreamed up while waiting on a 45-minute C$^{++}$ compile
 		\pause
 			\begin{itemize}
 				\item Fast compilation
@@ -81,11 +83,11 @@ type Shape struct {
 	\begin{itemize}
 		\item Basic unit is a \emph{package} (namespace boundary).\pause
 		\item Multiple source files in a package, in the same directory tree.\pause
-		\item Every program must have a \z{main} package.
-		\item The \z{main} package has a \z{main} function.\pause
-		\item Import packages into the program using the \z{import} statement.
+		\item Every program must have a \identifier{main} package.
+		\item The \identifier{main} package has a \identifier{main} function.\pause
+		\item Import packages into the program using the \keyword{import} statement.
 		\item Always prefix identifiers from imported packages with their package name.\pause
-		\item Identifiers can be \emph{public} or \emph{private} w/r/t package boundaries.
+		\item Identifiers can be \emph{public} or \emph{private} w/r/t package boundaries.\pause
 			\begin{itemize}
 				\item Identifier names starting with an uppercase letter are public.
 				\item All others are private.
