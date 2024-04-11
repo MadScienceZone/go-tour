@@ -1,6 +1,7 @@
 \documentclass[pdf]{beamer}
+\newcommand\REV{v0.0.1}
 % Berlin Berkeley Warsaw
-\newcommand\go[1]{\texttt{#1}}
+\newcommand\z[1]{\texttt{#1}}
 \usepackage{listings}
 \usepackage{xeCJK}
 \lstset{
@@ -16,6 +17,7 @@
 \title{A Whirlwind Tour of Go}
 \subtitle{Just the Cool Parts}
 \author{Steve Willoughby}
+\date{10-Apr-2024\\{\tiny\REV}}
 \begin{document}
 \begin{frame}
 	\titlepage
@@ -77,12 +79,12 @@ type Shape struct {
 \end{frame}
 \begin{frame}{Program Structure}
 	\begin{itemize}
-		\item Basic unit is a \emph{package} (namespace boundary).
-		\item Multiple source files in a package, in the same directory tree.
-		\item Every program must have a \go{main} package.
-		\item The \go{main} package has a \go{main} function.
-		\item Import packages into the program using the \go{import} statement.
-		\item Always prefix identifiers from imported packages with their package name.
+		\item Basic unit is a \emph{package} (namespace boundary).\pause
+		\item Multiple source files in a package, in the same directory tree.\pause
+		\item Every program must have a \z{main} package.
+		\item The \z{main} package has a \z{main} function.\pause
+		\item Import packages into the program using the \z{import} statement.
+		\item Always prefix identifiers from imported packages with their package name.\pause
 		\item Identifiers can be \emph{public} or \emph{private} w/r/t package boundaries.
 			\begin{itemize}
 				\item Identifier names starting with an uppercase letter are public.
@@ -93,6 +95,7 @@ type Shape struct {
 \begin{frame}[fragile]{Hello, World}
 \begin{lstlisting}
 /* Standard-issue "Hello, World" program in Go */
+
 package main
 
 import "fmt"
@@ -106,7 +109,7 @@ func main() {
 \begin{frame}{The Playground}
 	\begin{itemize}
 		\item Interactive playground to immediately try something in Go.
-		\item \go{https://go.dev/play/}
+		\item \z{https://go.dev/play/}
 	\end{itemize}
 	\begin{center}
 		\includegraphics[width=\textwidth]{playground}
@@ -121,25 +124,8 @@ import "encoding/json"
 import "flag"
 import "math"
 \end{lstlisting}
-	\end{itemize}
-	\vfill
-	\strut
-\end{frame}
-
-\begin{frame}[fragile]{Importing Third-Party Packages}
-	\begin{itemize}
-		\item Standard library package names are simple names:
-\begin{lstlisting}
-import (
-   "fmt"
-   "encoding/json"
-   "flag"
-   "math"
-)
-\end{lstlisting}
 \pause
 		\item Getting packages from public repositories:
-			\pause
 \begin{lstlisting}
 import "github.com/MadScienceZone/go-gma/v5/dice"
 \end{lstlisting}
@@ -149,13 +135,108 @@ import "github.com/MadScienceZone/go-gma/v5/dice"
 \end{frame}
 \begin{frame}{Automatic API Documentation}
 \begin{itemize}
-\item\go{https://pkg.go.dev/}\emph{repository-url}
+\item\z{https://pkg.go.dev/}\emph{repository-url}
 \end{itemize}
 	\begin{center}
 		\includegraphics[width=\textwidth]{docsite}
 	\end{center}
 \end{frame}
 
+\begin{frame}[fragile]{``Factored'' Notation}
+\begin{lstlisting}
+import "fmt"
+import "encoding/json"
+import "flag"
+import "math"
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+import (
+   "fmt"
+   "encoding/json"
+   "flag"
+   "math"
+)
+\end{lstlisting}
+\end{frame}
 
+\begin{frame}[fragile]{``Factored'' Notation}
+\begin{lstlisting}
+var initialized bool
+var userNames   []string
+var Greeting    string   = "Hello"
+var TheAnswer            = 42
+\end{lstlisting}
+\begin{lstlisting}
+var (
+    initialized bool
+    userNames   []string
+    Greeting    string   = "Hello"
+    TheAnswer            = 42
+)
+\end{lstlisting}
+\end{frame}
 
+\begin{frame}[fragile]{``Factored'' Notation}
+\begin{lstlisting}
+const initialized = false
+const Greeting    = "Hello"
+const TheAnswer   byte = 42
+\end{lstlisting}
+\begin{lstlisting}
+const (
+    initialized      = false
+    Greeting         = "Hello"
+    TheAnswer   byte = 42
+)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{``Factored'' Notation and iota}
+\begin{onlyenv}<1->
+\begin{lstlisting}
+type MessageType byte
+const (
+    ServerCommand MessageType = 0
+    ServerReply   MessageType = 1
+    ServerError   MessageType = 2
+    UrgentMessage MessageType = 3
+)
+\end{lstlisting}
+\end{onlyenv}
+\vfill\strut
+\begin{onlyenv}<2>
+\begin{lstlisting}
+type MessageType byte
+const (
+    ServerCommand MessageType = iota
+    ServerReply   MessageType = iota
+    ServerError   MessageType = iota
+    UrgentMessage MessageType = iota
+)
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<3>
+\begin{lstlisting}
+type MessageType byte
+const (
+    ServerCommand MessageType = iota
+    ServerReply   
+    ServerError   
+    UrgentMessage 
+)
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<4>
+\begin{lstlisting}
+type MessageType byte
+const (
+    ServerCommand MessageType = 1 << iota
+    ServerReply   
+    ServerError   
+    UrgentMessage 
+)
+\end{lstlisting}
+\end{onlyenv}
+\end{frame}
 \end{document}
