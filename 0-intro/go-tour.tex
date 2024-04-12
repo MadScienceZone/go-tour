@@ -13,7 +13,7 @@
 	keywordstyle=\color{blue}\ttfamily\bfseries,
 	identifierstyle=\color{green!70!black},
 	commentstyle=\ttfamily\color{gray},
-	stringstyle=\ttfamily\color{red},
+	stringstyle=\ttfamily\color{orange!90!black},
 	showstringspaces=true
 }
 \mode<presentation>{\usetheme{Berlin}\useoutertheme{infolines}\useinnertheme{rounded}}
@@ -62,6 +62,92 @@
 	\end{itemize}
 \end{frame}
 \subsection{The Basics of Go}
+\begin{frame}{Intrinsic Data Types}
+	\begin{itemize}
+		\item The usual suspects: 
+			\keyword{int}, 
+			\keyword{int8}, 
+			\keyword{int16}, 
+			\keyword{int32}, 
+			\keyword{int64}, 
+			\keyword{uint}, 
+			\keyword{uint8}, 
+			\keyword{uint16}, 
+			\keyword{uint32}, 
+			\keyword{uint64}, 
+			\keyword{bool},
+			\keyword{byte},
+			\keyword{float32},
+			\keyword{float64},
+			\keyword{string}.
+			\pause
+		\item Special things:
+			\keyword{complex64},
+			\keyword{complex128}.
+			\pause
+		\item Structures: \keyword{struct}\z{\{}\dots\z{\}}.
+			\pause
+		\item What about \keyword{char}? Nope. Instead, we have \keyword{rune}.
+			\pause
+		\item Arrays: \z{[10]}\keyword{int}, \z{[100]}\keyword{rune}.
+			\pause
+		\item Slices: \z{[]}\keyword{int}, \z{[]}\keyword{byte}, \z{[]}\keyword{string}.
+		\item Maps: \keyword{map}\z{[}\keyword{string}\z{]}\keyword{int}.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Expressions and Operators}
+	\begin{itemize}
+		\item Arithmetic:
+			\z{+},
+			\z{-},
+			\z{*},
+			\z{/},
+			\z{\%}.
+		\item Relational:
+			\z{==},
+			\z{!=},
+			\z{>},
+			\z{<},
+			\z{>=},
+			\z{<=}.
+		\item Logical:
+			\z{\&\&},
+			\z{||},
+			\z{!}.
+		\item Bitwise:
+			\z{\&},
+			\z{|},
+			\z{\textasciicircum},
+			\z{<<},
+			\z{>>},
+			\z{\&\textasciicircum}.
+			\hfill\z{// }\identifier{x}\z{ \&\textasciicircum\ }\identifier{y}\z{ == }\identifier{x}\z{ \& (\textasciicircum}\identifier{y}\z{)}
+		\pause
+		\item Assignment:
+			\z{=},
+			\z{+=},
+			\z{-=},
+			\z{*=},
+			\z{/=},
+			\z{\%=},
+			\z{\&=},
+			\z{\textasciicircum=},
+			\z{|=},
+			\z{<<=},
+			\z{>>=},
+			\z{:=}.
+		\pause
+		\item Reference/Dereference: \z{\&}, \z{*}.
+		\item Unary: \z{+}, \z{-}, \z{\textasciicircum}. \hfill\z{// \textasciicircum}\identifier{x}
+		\item Increment/Decrement: \z{++}, \z{-{}-}. \hfill\z{// }\identifier{x}\z{++} or \identifier{x}\z{-{}-}
+		\pause
+		\item Channel I/O: \z{<-}. \hfill\z{// }\identifier{channel}\z{<-}\identifier{x} or \z{<-}\identifier{channel}
+		\pause
+		\item Blank identifier: \identifier{\_}.
+	\end{itemize}
+\end{frame}
+
 \begin{frame}[fragile]{Go Syntax}
 	\begin{itemize}
 		\item Type declarations \emph{follow} identifier names
@@ -95,6 +181,7 @@ type Shape struct {
 			\end{itemize}
 	\end{itemize}
 \end{frame}
+
 \begin{frame}[fragile]{Hello, World}
 \begin{lstlisting}
 /* Standard-issue "Hello, World" program in Go */
@@ -252,7 +339,101 @@ const (
 )
 \end{lstlisting}
 \end{frame}
+
+\subsubsection{Collection Types}
+\begin{frame}[fragile]{Arrays}
+	\begin{itemize}
+		\item No, never mind. Let's talk about slices instead.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Slices}
+\begin{lstlisting}
+var Ages map[string]int
+Ages = make(map[string]int, 10)
+
+Ages["Alice"] = 14
+Ages["Bob"] = 22
+Ages["Charlie"] = 27
+Ages["Daria"] = 42
+fmt.Println(Ages)
+
+for name, age := range Ages {
+    if age >= 18 {
+        fmt.Printf("%s is allowed to vote.\n", name)
+    } else {
+        fmt.Printf("%s is not eligible to vote.\n", name)
+    }
+}
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Maps}
+\end{frame}
+\subsubsection{Control Flow}
+\begin{frame}[fragile]{Conditionals}
+% if for switch 
+\end{frame}
+\begin{frame}[fragile]{Loops}
+\end{frame}
+
+\subsection{Object Oriented Features}
+\begin{frame}[fragile]{Structures}
+\end{frame}
+
+\begin{frame}[fragile]{Method Functions}
+\end{frame}
+
+\begin{frame}[fragile]{Composition}
+\end{frame}
+
+\begin{frame}[fragile]{Polymorphism}
+\end{frame}
+
 \section[Concurrency]{Concurrency}
+\subsection{Goroutines}
+
+\begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
+\begin{lstlisting}
+func countdown() {
+    for i := 10; i >= 0; i-- {
+        fmt.Printf(">>> %d <<<\n", i)
+        time.Sleep(1 * time.Second)
+    }
+}
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+func main() {
+    countdown()
+    fmt.Println("Starting a long-running task...")
+    time.Sleep(15 * time.Second)
+    fmt.Println("Done. Exiting.")
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
+\begin{lstlisting}
+func countdown() {
+    for i := 10; i >= 0; i-- {
+        fmt.Printf(">>> %d <<<\n", i)
+        time.Sleep(1 * time.Second)
+    }
+}
+\end{lstlisting}
+\begin{lstlisting}
+func main() {
+    go countdown()
+    fmt.Println("Starting a long-running task...")
+    time.Sleep(15 * time.Second)
+    fmt.Println("Done. Exiting.")
+}
+\end{lstlisting}
+\end{frame}
+
+
+
+
 \subsection{Thread-Safe Memory Access}
 \begin{frame}[fragile]{Global ID Generation (Na\"\i ve)}
 \begin{lstlisting}
@@ -340,26 +521,32 @@ client.ID = <-IDSource
 \begin{lstlisting}
 ch := make(chan byte)
 \end{lstlisting}
-\begin{onlyenv}<2-3>
-\begin{lstlisting}
-fmt.Println("Writing to channel")
-
-ch <- 42
-\end{lstlisting}
-\end{onlyenv}
-\begin{onlyenv}<4>
+\pause
 \begin{lstlisting}
 fmt.Println("Writing to channel")
 \end{lstlisting}
-\blocked{ch <- 42\qquad\qquad// DEADLOCKED!}
-\end{onlyenv}
-\begin{onlyenv}<3->
+\identifier{ch}\z{ <- 42}
+\pause
 \begin{lstlisting}
 fmt.Println("Reading from channel")
 x := <-ch
 fmt.Println("Read", x, "from channel")
 \end{lstlisting}
-\end{onlyenv}
+\end{frame}
+
+\begin{frame}[fragile]{Channels}
+\begin{lstlisting}
+ch := make(chan byte)
+\end{lstlisting}
+\begin{lstlisting}
+fmt.Println("Writing to channel")
+\end{lstlisting}
+{\color{red}\z{ch <- 42\qquad\qquad// DEADLOCKED!}}
+\begin{lstlisting}
+fmt.Println("Reading from channel")
+x := <-ch
+fmt.Println("Read", x, "from channel")
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Channels}
@@ -375,10 +562,12 @@ ch <- 42
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Channels}
+\begin{frame}[fragile]{Buffered Channels}
 \begin{lstlisting}
+\end{lstlisting}
 ch := make(chan byte, 1)
-
+\pause
+\begin{lstlisting}
 fmt.Println("Writing to channel")
 ch <- 42
 
@@ -388,5 +577,12 @@ fmt.Println("Read", x, "from channel")
 \end{lstlisting}
 \end{frame}
 
+\subsection{}
+% interface any
+% select
 
+%
+% backup
+% type assertions/switch
+% contexts
 \end{document}
