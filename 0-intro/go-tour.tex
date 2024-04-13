@@ -7,6 +7,7 @@
 \newcommand\identifier[1]{{\color{green!70!black}\z{#1}}}
 \newcommand\keyword[1]{{\color{blue}\z{#1}}}
 \newcommand\blocked[1]{{\color{red}\z{#1}}}
+\newcommand\gostring[1]{{\color{orange!90!black}\z{#1}}}
 \lstset{
 	language=Go,
 	basicstyle=\ttfamily,
@@ -87,12 +88,15 @@
 			\pause
 		\item Structures: \keyword{struct}\z{\{}\dots\z{\}}.
 			\pause
-		\item What about \keyword{char}? Nope. Instead, we have \keyword{rune}.
+		\item What about \keyword{char}? Nope. Instead, we have \keyword{rune} (single-character Unicode \gostring{'A'}, \gostring{'\textbackslash n'}, \gostring{'$\Sigma$'}).
 			\pause
 		\item Arrays: \z{[10]}\keyword{int}, \z{[100]}\keyword{rune}.
 			\pause
 		\item Slices: \z{[]}\keyword{int}, \z{[]}\keyword{byte}, \z{[]}\keyword{string}.
+			\pause
 		\item Maps: \keyword{map}\z{[}\keyword{string}\z{]}\keyword{int}.
+			\pause
+		\item Channels: \keyword{chan int}.
 	\end{itemize}
 \end{frame}
 
@@ -340,17 +344,169 @@ const (
 \end{lstlisting}
 \end{frame}
 
+\subsubsection{Control Flow}
+\begin{frame}[fragile]{Conditionals}
+\begin{lstlisting}
+var x int
+
+if x > 10 {
+    fmt.Println("X exceeds 10.")
+} else {
+    fmt.Println("X is tiny.")
+}
+
+if x *= 2; x > 10 {
+    fmt.Println("Now X is big.")
+} else {
+    fmt.Println("X is still small.")
+}
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Switches}
+\begin{lstlisting}
+var x int
+
+switch x {
+case 0:
+    fmt.Println("X is nothing.")
+case 1, 3, 5:
+    fmt.Println("X is odd.")
+case 2, 4, 6:
+    fmt.Println("X is even.")
+default:
+    fmt.Println("X is bigger than I can count.")
+}
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Loops}
+\begin{lstlisting}
+// infinite loop
+for {
+}
+
+// while loop
+for thing.IsReady() {
+}
+
+// traditional 3-part for loop
+for i := 0; i < 10; i++ {
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Loops}
+\begin{lstlisting}
+// loop over interval [0,10)
+for i := range 10 {
+}
+
+// loop over elements of a collection
+for i, v := range []int{1, 4, -3, 153} {
+}
+
+// loop over data received from channel
+for item := range channel {
+}
+\end{lstlisting}
+\end{frame}
+
+
 \subsubsection{Collection Types}
 \begin{frame}[fragile]{Arrays}
 	\begin{itemize}
-		\item No, never mind. Let's talk about slices instead.
+		\item The number of elements \emph{is part of the type} (\z{[10]}\keyword{int} vs.\@ \z{[15]}\keyword{int}).
+			\pause
+		\item Variables declared are initialized empty but ready for use
+\begin{lstlisting}
+var things [5]string
+
+things[0] = "raindrops on roses"
+things[1] = "whiskers on kittens"
+things[2] = "copper kettles"
+things[3] = "woolen mittens"
+things[4] = "doorbells"
+
+fmt.Println("I like", things[2])
+fmt.Println("I also like", things)
+fmt.Println("I know", len(things), "things.")
+\end{lstlisting}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Arrays}
+	\begin{itemize}
+		\item Or you can specify an array literal value to use in an expression or assign to a variable
+\begin{lstlisting}
+things := [5]string{
+    "raindrops on roses",
+    "whiskers on kittens",
+    "copper kettles",
+    "woolen mittens",
+    "doorbells",
+}
+
+fmt.Println("I like", things[2])
+fmt.Println("I also like", things)
+fmt.Println("I know", len(things), "things.")
+\end{lstlisting}
 	\end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Slices}
+	\begin{itemize}
+		\item Specify a range \z{[}$n$\z{:}$m$\z{]} as the index into an array to get a subset of the array values
+			with indices from $n$ to $m-1$.
+		\item The value is a \emph{slice}, not an \emph{array}. It's a different type.
+		\begin{itemize}
+			\item For \z{[5]}\keyword{string}, the value is \z{[]}\keyword{string}.
+		\end{itemize}
+	\end{itemize}
+\begin{lstlisting}
+fmt.Println("Some things:", things[1:3])
+fmt.Println("Some things:", things[:3])
+fmt.Println("Some things:", things[1:])
+fmt.Println("Some things:", things[:])
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Slices}
+	\begin{itemize}
+		\item Dimensionless ``arrays'': \z{[]}\keyword{int}.
+		\item Actually a ``view'' into an underlying array.
+			\begin{itemize}
+				\item Go creates and manages the underlying array automatically for you.
+			\end{itemize}
+	\end{itemize}
+\begin{lstlisting}
+var things []string
+
+things = append(things, "doorbells")
+things = append(things, "sleighbells", "schnitzel")
+fmt.Println(len(things), things) 
+// prints:  3 [doorbells sleighbells schnitzel]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Slices}
+	\begin{itemize}
+		\item Can also specify a slice of values as a literal.
+	\end{itemize}
+\begin{lstlisting}
+things := []string{
+    "doorbells",
+    "sleighbells",
+    "schnitzel",
+}
+primes := []int{2, 3, 5, 7, 11, 13}
+lowPrimes := slices.Delete(primes, 3, len(primes))
+fmt.Println(lowPrimes)
+// prints:  [2 3 5]
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Maps}
 \begin{lstlisting}
 var Ages map[string]int
-Ages = make(map[string]int, 10)
+Ages = make(map[string]int)
 
 Ages["Alice"] = 14
 Ages["Bob"] = 22
@@ -360,36 +516,293 @@ fmt.Println(Ages)
 
 for name, age := range Ages {
     if age >= 18 {
-        fmt.Printf("%s is allowed to vote.\n", name)
+        fmt.Printf("%s may vote.\n", name)
     } else {
-        fmt.Printf("%s is not eligible to vote.\n", name)
+        fmt.Printf("%s is not eligible.\n", name)
     }
 }
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Maps}
+\begin{lstlisting}
+Ages := map[string]int{
+    "Alice": 14,
+    "Bob": 22,
+    "Charlie": 27,
+    "Daria": 42,
+}
+fmt.Println(Ages)
+
+for name, age := range Ages {
+    if age >= 18 {
+        fmt.Printf("%s may vote.\n", name)
+    } else {
+        fmt.Printf("%s is not eligible.\n", name)
+    }
+}
+\end{lstlisting}
 \end{frame}
-\subsubsection{Control Flow}
-\begin{frame}[fragile]{Conditionals}
-% if for switch 
-\end{frame}
-\begin{frame}[fragile]{Loops}
+\begin{frame}[fragile]{Maps}
+\begin{lstlisting}
+aliceAge := Ages["Alice"]      // 14
+eveAge := Ages["Eve"]          // 0
+
+aliceAge, exists := Ages["Alice"]      // 14, true
+eveAge, exists := Ages["Eve"]          // 0, false
+
+Ages["Eve"] = 20
+delete(Ages, "Bob")
+
+if _, exists := Ages[name] {
+    fmt.Prinln("We do know about", name)
+}
+
+if age, exists := Ages[name]; exists {
+    fmt.Printf("We know %s's age is %d.\n", name, age)
+} else {
+    fmt.Println("We don't know", name)
+}
+\end{lstlisting}
 \end{frame}
 
 \subsection{Object Oriented Features}
 \begin{frame}[fragile]{Structures}
+\begin{lstlisting}
+type Triangle struct {
+    Base int
+    Height int
+    X int
+    Y int
+}
+
+var t1 Triangle
+var t2 Triange = Triangle{Base: 3, Height: 1}
+t3 := Triangle{
+    Base:   100,
+    Height: 42,
+    X:      -3,
+    Y:      14,
+}
+
+t1.Base = 37
+t1.Height = 15
+t1.X = 11
+t1.Y = 22
+fmt.Println("t2's base is", t2.Base)
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
+\begin{lstlisting}
+func Area(t Triangle) float64 {
+    return (t.Base * t.Height) / 2.0
+}
+
+func Translate(t Triangle, dx, dy int) Triangle {
+    t.X += dx
+    t.Y += dy
+    return t
+}
+
+fmt.Println("t1 area =", Area(t1))
+t2 = Translate(t2, +3, -2)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Method Functions}
+\begin{lstlisting}
+func Area(t Triangle) float64 {
+    return (t.Base * t.Height) / 2.0
+}
+
+func Translate(t *Triangle, dx, dy int) {
+    t.X += dx
+    t.Y += dy
+}
+
+fmt.Println("t1 area =", Area(t1))
+Translate(&t2, +3, -2)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Method Functions}
+\begin{lstlisting}
+func (t Triangle) Area() float64 {
+    return (t.Base * t.Height) / 2.0
+}
+
+func (t *Triangle) Translate(dx, dy int) {
+    t.X += dx
+    t.Y += dy
+}
+
+fmt.Println("t1 area =", t1.Area())
+t2.Translate(+3, -2)
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
+\begin{lstlisting}
+type baseShape struct {
+    X int
+    Y int
+}
+
+func (s *baseShape) Translate(dx, dy int) {
+    s.X += dx
+    s.Y += dy
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Composition}
+\begin{lstlisting}
+type Triangle struct {
+    baseShape
+    Base   int
+    Height int
+}
+
+func (t Triangle) Area() float64 {
+    return (t.Base * t.Height) / 2.0
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Composition}
+\begin{lstlisting}
+type Rectangle struct {
+    baseShape
+    Width  int
+    Height int
+}
+
+func (r Rectangle) Area() float64 {
+    return r.Width * r.Height
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Composition}
+\begin{lstlisting}
+type Polygon struct {
+    baseShape
+    Sides  int
+    Length float64
+    Radius float64
+}
+
+func (p Polygon) Area() float64 {
+    return float64(p.Sides) / 2.0 * p.Length * p.Radius
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Composition}
+\begin{lstlisting}
+type Circle struct {
+    baseShape
+    Radius float64
+}
+
+func (c Circle) Area() float64 {
+    return math.Pi * math.Pow(c.Radius, 2)
+}
+\end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Polymorphism}
+\begin{lstlisting}
+shapes := []Shape{
+    Triangle{X: 3, Y: 12, Base: 3, Height: 2},
+    Circle{X: 0, Y: 22, Radius: 1.5},
+    Rectangle{Height: 100, width: 50},
+}
+
+for i, shape := range shapes {
+    fmt.Println("#%d area=%f\n", i, shape.Area())
+    shape.Translate(-1, -1)
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Polymorphism}
+\begin{lstlisting}
+type Shape interface {
+    Area() float64
+    Translate(int, int)
+}
+
+func reportArea(s Shape) {
+    fmt.Printf("The area is %f\n", s.Area()
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Type Assertions}
+\begin{onlyenv}<1-2>
+\begin{lstlisting}
+f(42)
+f(-2)
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<3->
+\begin{lstlisting}
+f(42)
+f("hello")
+\end{lstlisting}
+\end{onlyenv}
+\begin{lstlisting}
+func f(mystery any) {    // any == interface{}
+    var v int
+\end{lstlisting}
+\begin{onlyenv}<1>
+\begin{lstlisting}
+    // we know it's an int, just treat it as one
+    v = mystery + 15
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<2-3>
+\begin{lstlisting}
+    x := mystery.(int)
+    v = x + 15
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<4>
+\begin{lstlisting}
+    x, ok := mystery.(int)
+    v = x + 15
+\end{lstlisting}
+\end{onlyenv}
+\begin{lstlisting}
+    fmt.Println("int mystery is", v)
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Type Switch}
+\begin{lstlisting}
+f(42)
+f("hello")
+
+func f(mystery any) {    // any == interface{}
+    var v int
+    
+    switch x := mystery.(type) {
+    case int:
+        v = x + 15
+    case string:
+        fmt.Println("string", x)
+    default:
+        // handle the unknown type
+    }
+}
+\end{lstlisting}
 \end{frame}
 
 \section[Concurrency]{Concurrency}
+\begin{lstlisting}
+\end{lstlisting}
 \subsection{Goroutines}
 
 \begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
@@ -564,8 +977,8 @@ ch <- 42
 
 \begin{frame}[fragile]{Buffered Channels}
 \begin{lstlisting}
-\end{lstlisting}
 ch := make(chan byte, 1)
+\end{lstlisting}
 \pause
 \begin{lstlisting}
 fmt.Println("Writing to channel")
@@ -577,12 +990,49 @@ fmt.Println("Read", x, "from channel")
 \end{lstlisting}
 \end{frame}
 
-\subsection{}
-% interface any
-% select
+\subsection{Error Handling}
+\begin{frame}[fragile]{Error Values}
+\begin{onlyenv}<1>
+\begin{lstlisting}
+func main() {
+    var intval int
+    var err    error
+
+    for i, arg := range os.Args {
+        intval, err := strconv.Atoi(arg)
+        if err != nil {
+            fmt.Printf("Arg #%d (\"%s\"): %v.\n",
+                       i, arg, err)
+        } else {
+            fmt.Printf("Arg #%d == %d\n", i, intval)
+        }
+    }
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<2>
+\begin{lstlisting}
+func main() {
+    var intval int
+    var err    error
+
+    for i, arg := range os.Args {
+        intval, err = strconv.Atoi(arg); err != nil {
+            fmt.Printf("Arg #%d (\"%s\"): %v.\n",
+                       i, arg, err)
+        } else {
+            fmt.Printf("Arg #%d == %d\n", i, intval)
+        }
+    }
+}
+\end{lstlisting}
+\end{onlyenv}
+\end{frame}
+
+\section{Backup}
+\subsection{Contexts}
 
 %
 % backup
-% type assertions/switch
 % contexts
 \end{document}
