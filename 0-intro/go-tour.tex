@@ -1,5 +1,5 @@
 \documentclass[pdf]{beamer}
-\newcommand\REV{v0.0.1}
+\newcommand\REV{v0.1.0}
 % Berlin Berkeley Warsaw
 \newcommand\z[1]{\texttt{#1}}
 \usepackage{listings}
@@ -8,182 +8,198 @@
 \newcommand\keyword[1]{{\color{blue}\z{#1}}}
 \newcommand\blocked[1]{{\color{red}\z{#1}}}
 \newcommand\gostring[1]{{\color{orange!90!black}\z{#1}}}
+\newcommand\playground[1]{{\color{gray}\z{#1}}}
 \lstset{
-	language=Go,
-	basicstyle=\ttfamily,
-	keywordstyle=\color{blue}\ttfamily\bfseries,
-	identifierstyle=\color{green!70!black},
-	commentstyle=\ttfamily\color{gray},
-	stringstyle=\ttfamily\color{orange!90!black},
-	showstringspaces=true
+    language=Go,
+    basicstyle=\ttfamily,
+    keywordstyle=\color{blue}\ttfamily\bfseries,
+    identifierstyle=\color{green!70!black},
+    commentstyle=\ttfamily\color{gray},
+    stringstyle=\ttfamily\color{orange!90!black},
+    showstringspaces=true
 }
 \mode<presentation>{\usetheme{Berlin}\useoutertheme{infolines}\useinnertheme{rounded}}
 \title{A Whirlwind Tour of Go}
 \subtitle{Just the Cool Parts}
 \author{Steve Willoughby}
-\date{10-Apr-2024\\{\tiny\REV}}
+\date{13-Apr-2024\\{\tiny\REV}}
 \begin{document}
 \begin{frame}
-	\titlepage
-	\begin{center}
-	\includegraphics[height=.25\textheight]{go-logo}
-	\includegraphics[height=.25\textheight]{gopher}
-	\end{center}
+    \titlepage
+    \begin{center}
+    \includegraphics[height=.25\textheight]{go-logo}
+    \includegraphics[height=.25\textheight]{gopher}
+    \end{center}
 \end{frame}
 \section[Overview]{Overview}
 \subsection{What Are We Doing Here?}
 \begin{frame}{The Point}
-	\begin{itemize}
-		\item ``What \emph{is} Go?''
-		\item ``What is it actually good for?''
-		\item ``Why should I care?''
-	\end{itemize}
+    \begin{itemize}
+        \item ``What \emph{is} Go?''
+        \item ``What is it actually good for?''
+        \item ``Why should I care?''
+    \end{itemize}
 \end{frame}
 \subsection{Motivation for Go}
 \begin{frame}{30 Seconds of History}
-	\begin{itemize}
-		\item Designed by Rob Pike, Ken Thompson, and Robert Griesemer.
-		\item Includes direct experience with C from day 1 to now.
-			\pause
-		\item ``If we were to design C today, knowing what we know now, on today's technology\dots''
-			\pause
-			\begin{itemize}
-		\item $\therefore$ Go's syntax is very much like C's
-		\item \dots\ but cleaned up and streamlined a bit.
-			\end{itemize}
-		\pause
-	\item Dreamed up while waiting on a 45-minute C$^{++}$ compile
-		\pause
-			\begin{itemize}
-				\item Fast compilation
-				\item Native binary compiler with low overhead
-				\item Strong static typing
-				\item Extraordinarily spartan
-			\end{itemize}
-	\end{itemize}
+    \begin{itemize}
+        \item Designed by Rob Pike, Ken Thompson, and Robert Griesemer.
+        \item Includes direct experience with C from day 1 to now.
+            \pause
+        \item ``If we were to design C today, knowing what we know now, on today's technology\dots''
+            \pause
+            \begin{itemize}
+        \item $\therefore$ Go's syntax is very much like C's
+        \item \dots\ but cleaned up and streamlined a bit.
+            \end{itemize}
+        \pause
+    \item Dreamed up while waiting on a 45-minute C\texttt{++} compile
+        \pause
+            \begin{itemize}
+                \item Fast compilation
+                \item Native binary compiler with low overhead
+                \item Strong static typing
+                \item Extraordinarily spartan
+            \end{itemize}
+    \end{itemize}
 \end{frame}
-\subsection{The Basics of Go}
+\section{Introducing Go}
+\subsection{The Basics}
 \begin{frame}{Intrinsic Data Types}
-	\begin{itemize}
-		\item The usual suspects: 
-			\keyword{int}, 
-			\keyword{int8}, 
-			\keyword{int16}, 
-			\keyword{int32}, 
-			\keyword{int64}, 
-			\keyword{uint}, 
-			\keyword{uint8}, 
-			\keyword{uint16}, 
-			\keyword{uint32}, 
-			\keyword{uint64}, 
-			\keyword{bool},
-			\keyword{byte},
-			\keyword{float32},
-			\keyword{float64},
-			\keyword{string}.
-			\pause
-		\item Special things:
-			\keyword{complex64},
-			\keyword{complex128}.
-			\pause
-		\item Structures: \keyword{struct}\z{\{}\dots\z{\}}.
-			\pause
-		\item What about \keyword{char}? Nope. Instead, we have \keyword{rune} (single-character Unicode \gostring{'A'}, \gostring{'\textbackslash n'}, \gostring{'$\Sigma$'}).
-			\pause
-		\item Arrays: \z{[10]}\keyword{int}, \z{[100]}\keyword{rune}.
-			\pause
-		\item Slices: \z{[]}\keyword{int}, \z{[]}\keyword{byte}, \z{[]}\keyword{string}.
-			\pause
-		\item Maps: \keyword{map}\z{[}\keyword{string}\z{]}\keyword{int}.
-			\pause
-		\item Channels: \keyword{chan int}.
-	\end{itemize}
+    \begin{itemize}
+        \item The usual suspects: 
+            \keyword{int}, 
+            \keyword{int8}, 
+            \keyword{int16}, 
+            \keyword{int32}, 
+            \keyword{int64}, 
+            \keyword{uint}, 
+            \keyword{uint8}, 
+            \keyword{uint16}, 
+            \keyword{uint32}, 
+            \keyword{uint64}, 
+            \keyword{bool},
+            \keyword{byte},
+            \keyword{float32},
+            \keyword{float64},
+            \keyword{string}.
+            \begin{itemize}
+                \item \gostring{"hello"}, \gostring{`hello`}, \z{42}, \z{0x7F}, \z{0o177}, \z{0b11010111}
+            \end{itemize}
+            \pause
+        \item Special things:
+            \keyword{complex64},
+            \keyword{complex128},
+            \keyword{error}.
+            \begin{itemize}
+                \item \z{13+2i}, \identifier{complex}\z{(13, 2)}
+            \end{itemize}
+            \pause
+        \item Structures: \keyword{struct}\z{\{}\dots\z{\}}.
+            \pause
+        \item What about \keyword{char}? Nope. Instead, we have \keyword{rune}.
+            \begin{itemize}
+                \item \gostring{'A'}, \gostring{'\textbackslash n'}, \gostring{'$\Sigma$'}
+            \end{itemize}
+            \pause
+        \item Arrays: \z{[10]}\keyword{int}, \z{[100]}\keyword{rune}.
+            \pause
+        \item Slices: \z{[]}\keyword{int}, \z{[]}\keyword{byte}, \z{[]}\keyword{string}.
+            \pause
+        \item Maps: \keyword{map}\z{[}\keyword{string}\z{]}\keyword{int}.
+            \pause
+        \item Channels: \keyword{chan int}.
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{Expressions and Operators}
-	\begin{itemize}
-		\item Arithmetic:
-			\z{+},
-			\z{-},
-			\z{*},
-			\z{/},
-			\z{\%}.
-		\item Relational:
-			\z{==},
-			\z{!=},
-			\z{>},
-			\z{<},
-			\z{>=},
-			\z{<=}.
-		\item Logical:
-			\z{\&\&},
-			\z{||},
-			\z{!}.
-		\item Bitwise:
-			\z{\&},
-			\z{|},
-			\z{\textasciicircum},
-			\z{<<},
-			\z{>>},
-			\z{\&\textasciicircum}.
-			\hfill\z{// }\identifier{x}\z{ \&\textasciicircum\ }\identifier{y}\z{ == }\identifier{x}\z{ \& (\textasciicircum}\identifier{y}\z{)}
-		\pause
-		\item Assignment:
-			\z{=},
-			\z{+=},
-			\z{-=},
-			\z{*=},
-			\z{/=},
-			\z{\%=},
-			\z{\&=},
-			\z{\textasciicircum=},
-			\z{|=},
-			\z{<<=},
-			\z{>>=},
-			\z{:=}.
-		\pause
-		\item Reference/Dereference: \z{\&}, \z{*}.
-		\item Unary: \z{+}, \z{-}, \z{\textasciicircum}. \hfill\z{// \textasciicircum}\identifier{x}
-		\item Increment/Decrement: \z{++}, \z{-{}-}. \hfill\z{// }\identifier{x}\z{++} or \identifier{x}\z{-{}-}
-		\pause
-		\item Channel I/O: \z{<-}. \hfill\z{// }\identifier{channel}\z{<-}\identifier{x} or \z{<-}\identifier{channel}
-		\pause
-		\item Blank identifier: \identifier{\_}.
-	\end{itemize}
+    \begin{itemize}
+        \item Arithmetic:
+            \z{+},
+            \z{-},
+            \z{*},
+            \z{/},
+            \z{\%}.
+        \item Relational:
+            \z{==},
+            \z{!=},
+            \z{>},
+            \z{<},
+            \z{>=},
+            \z{<=}.
+        \item Logical:
+            \z{\&\&},
+            \z{||},
+            \z{!}.
+        \item Bitwise:
+            \z{\&},
+            \z{|},
+            \z{\textasciicircum},
+            \z{<<},
+            \z{>>},
+            \z{\&\textasciicircum}.
+            \hfill\z{// }\identifier{x}\z{ \&\textasciicircum\ }\identifier{y}\z{ == }\identifier{x}\z{ \& (\textasciicircum}\identifier{y}\z{)}
+        \pause
+        \item Assignment:
+            \z{=},
+            \z{+=},
+            \z{-=},
+            \z{*=},
+            \z{/=},
+            \z{\%=},
+            \z{\&=},
+            \z{\textasciicircum=},
+            \z{|=},
+            \z{<<=},
+            \z{>>=},
+            \z{:=}.
+        \pause
+        \item Reference/Dereference: \z{\&}, \z{*}.
+        \item Unary: \z{+}, \z{-}, \z{\textasciicircum}. \hfill\z{// \textasciicircum}\identifier{x}
+        \item Increment/Decrement: \z{++}, \z{-{}-}. \hfill\z{// }\identifier{x}\z{++} or \identifier{x}\z{-{}-}
+        \pause
+        \item Channel I/O: \z{<-}. \hfill\z{// }\identifier{channel}\z{<-}\identifier{x} or \z{<-}\identifier{channel}
+        \pause
+        \item Blank identifier: \identifier{\_}.
+    \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Go Syntax}
-	\begin{itemize}
-		\item Type declarations \emph{follow} identifier names
+\begin{frame}[fragile]{Declarations}
+    \begin{itemize}
+        \item Type declarations \emph{follow} identifier names
 \begin{lstlisting}
 var x int
 var UserName string
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 func AddNumbers(x, y int) int { ... }
 func DivideNumbers(x, y int) (int, error) { ... }
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 type Shape struct {
    X     int
    Y     int
    Color ColorCode
 }
 \end{lstlisting}
-	\end{itemize}
+    \end{itemize}
 \end{frame}
 \begin{frame}{Program Structure}
-	\begin{itemize}
-		\item Basic unit is a \emph{package} (namespace boundary).\pause
-		\item Multiple source files in a package, in the same directory tree.\pause
-		\item Every program must have a \identifier{main} package.
-		\item The \identifier{main} package has a \identifier{main} function.\pause
-		\item Import packages into the program using the \keyword{import} statement.
-		\item Always prefix identifiers from imported packages with their package name.\pause
-		\item Identifiers can be \emph{public} or \emph{private} w/r/t package boundaries.\pause
-			\begin{itemize}
-				\item Identifier names starting with an uppercase letter are public.
-				\item All others are private.
-			\end{itemize}
-	\end{itemize}
+    \begin{itemize}
+        \item Basic unit is a \emph{package} (namespace boundary).\pause
+        \item Multiple source files in a package, in the same directory.\pause
+        \item Every program must have a \identifier{main} package.
+        \item The \identifier{main} package has a \identifier{main} function.\pause
+        \item Import packages into the program using the \keyword{import} statement.
+        \item Always prefix identifiers from imported packages with their package name.\pause
+        \item Identifiers can be \emph{public} or \emph{private} w/r/t package boundaries.\pause
+            \begin{itemize}
+                \item Identifier names starting with an uppercase letter are public.
+                \item All others are private.
+            \end{itemize}
+    \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Hello, World}
@@ -201,41 +217,42 @@ func main() {
 \end{frame}
 \subsection{The Go Ecosystem}
 \begin{frame}{The Playground}
-	\begin{itemize}
-		\item Interactive playground to immediately try something in Go.
-		\item \z{https://go.dev/play/}
-	\end{itemize}
-	\begin{center}
-		\includegraphics[width=\textwidth]{playground}
-	\end{center}
+    \begin{itemize}
+        \item Interactive playground to immediately try something in Go.
+        \item \z{https://go.dev/play/}
+    \end{itemize}
+    \begin{center}
+        \includegraphics[width=\textwidth]{playground}
+    \end{center}
 \end{frame}
 \begin{frame}[fragile]{Importing Third-Party Packages}
-	\begin{itemize}
-		\item Standard library package names are simple names:
-			\begin{lstlisting}
+    \begin{itemize}
+        \item Standard library package names are simple names:
+            \begin{lstlisting}
 import "fmt"
 import "encoding/json"
 import "flag"
 import "math"
 \end{lstlisting}
 \pause
-		\item Getting packages from public repositories:
+        \item Getting packages from public repositories:
 \begin{lstlisting}
 import "github.com/MadScienceZone/go-gma/v5/dice"
 \end{lstlisting}
-	\end{itemize}
-	\vfill
-	\strut
+    \end{itemize}
+    \vfill
+    \strut
 \end{frame}
 \begin{frame}{Automatic API Documentation}
 \begin{itemize}
 \item\z{https://pkg.go.dev/}\emph{repository-url}
 \end{itemize}
-	\begin{center}
-		\includegraphics[width=\textwidth]{docsite}
-	\end{center}
+    \begin{center}
+        \includegraphics[width=\textwidth]{docsite}
+    \end{center}
 \end{frame}
 
+\subsection{Go Syntax}
 \begin{frame}[fragile]{``Factored'' Notation}
 \begin{lstlisting}
 import "fmt"
@@ -273,8 +290,8 @@ var (
 
 \begin{frame}[fragile]{``Factored'' Notation}
 \begin{lstlisting}
-const initialized = false
-const Greeting    = "Hello"
+const initialized      = false
+const Greeting         = "Hello"
 const TheAnswer   byte = 42
 \end{lstlisting}
 \begin{lstlisting}
@@ -288,6 +305,7 @@ const (
 
 \begin{frame}[fragile]{``Factored'' Notation and iota}
 \begin{onlyenv}<1->
+\playground{https://go.dev/play/p/LSHu1VKUz20}
 \begin{lstlisting}
 type MessageType byte
 const (
@@ -298,10 +316,18 @@ const (
 )
 \end{lstlisting}
 \end{onlyenv}
-\vfill\strut
+\begin{onlyenv}<1>
+\begin{lstlisting}
+const (
+
+
+
+
+)
+\end{lstlisting}
+\end{onlyenv}
 \begin{onlyenv}<2>
 \begin{lstlisting}
-type MessageType byte
 const (
     ServerCommand MessageType = iota
     ServerReply   MessageType = iota
@@ -312,7 +338,6 @@ const (
 \end{onlyenv}
 \begin{onlyenv}<3>
 \begin{lstlisting}
-type MessageType byte
 const (
     ServerCommand MessageType = iota
     ServerReply   
@@ -323,6 +348,7 @@ const (
 \end{onlyenv}
 \end{frame}
 \begin{frame}[fragile]{``Factored'' Notation and iota Expressions}
+\playground{https://go.dev/play/p/LSHu1VKUz20}
 \begin{lstlisting}
 type MessageType byte
 const (
@@ -332,9 +358,7 @@ const (
     UrgentMessage MessageType = 0x08
 )
 \end{lstlisting}
-\vfill\strut
 \begin{lstlisting}
-type MessageType byte
 const (
     ServerCommand MessageType = 1 << iota
     ServerReply   
@@ -344,7 +368,7 @@ const (
 \end{lstlisting}
 \end{frame}
 
-\subsubsection{Control Flow}
+\subsection{Control Flow}
 \begin{frame}[fragile]{Conditionals}
 \begin{lstlisting}
 var x int
@@ -354,7 +378,9 @@ if x > 10 {
 } else {
     fmt.Println("X is tiny.")
 }
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 if x *= 2; x > 10 {
     fmt.Println("Now X is big.")
 } else {
@@ -411,12 +437,12 @@ for item := range channel {
 \end{frame}
 
 
-\subsubsection{Collection Types}
+\subsection{Collection Types}
 \begin{frame}[fragile]{Arrays}
-	\begin{itemize}
-		\item The number of elements \emph{is part of the type} (\z{[10]}\keyword{int} vs.\@ \z{[15]}\keyword{int}).
-			\pause
-		\item Variables declared are initialized empty but ready for use
+    \begin{itemize}
+        \item The number of elements \emph{is part of the type} (\z{[10]}\keyword{int} vs.\@ \z{[15]}\keyword{int}).
+            \pause
+        \item Variables declared are initialized empty but ready for use
 \begin{lstlisting}
 var things [5]string
 
@@ -424,43 +450,43 @@ things[0] = "raindrops on roses"
 things[1] = "whiskers on kittens"
 things[2] = "copper kettles"
 things[3] = "woolen mittens"
-things[4] = "doorbells"
+things[4] = "wild geese"
 
 fmt.Println("I like", things[2])
 fmt.Println("I also like", things)
 fmt.Println("I know", len(things), "things.")
 \end{lstlisting}
-	\end{itemize}
+    \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Arrays}
-	\begin{itemize}
-		\item Or you can specify an array literal value to use in an expression or assign to a variable
+    \begin{itemize}
+        \item Or you can specify an array literal value to use in an expression or assign to a variable
 \begin{lstlisting}
 things := [5]string{
     "raindrops on roses",
     "whiskers on kittens",
     "copper kettles",
     "woolen mittens",
-    "doorbells",
+    "wild geese",
 }
 
 fmt.Println("I like", things[2])
 fmt.Println("I also like", things)
 fmt.Println("I know", len(things), "things.")
 \end{lstlisting}
-	\end{itemize}
+    \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]{Slices}
-	\begin{itemize}
-		\item Specify a range \z{[}$n$\z{:}$m$\z{]} as the index into an array to get a subset of the array values
-			with indices from $n$ to $m-1$.
-		\item The value is a \emph{slice}, not an \emph{array}. It's a different type.
-		\begin{itemize}
-			\item For \z{[5]}\keyword{string}, the value is \z{[]}\keyword{string}.
-		\end{itemize}
-	\end{itemize}
+    \begin{itemize}
+        \item Specify a range \z{[}$n$\z{:}$m$\z{]} as the index into an array to get a subset of the array values
+            with indices from $n$ to $m-1$.
+        \item The value is a \emph{slice}, not an \emph{array}. It's a different type.
+        \begin{itemize}
+            \item For \z{[5]}\keyword{string}, the value is \z{[]}\keyword{string}.
+        \end{itemize}
+    \end{itemize}
 \begin{lstlisting}
 fmt.Println("Some things:", things[1:3])
 fmt.Println("Some things:", things[:3])
@@ -469,16 +495,18 @@ fmt.Println("Some things:", things[:])
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Slices}
-	\begin{itemize}
-		\item Dimensionless ``arrays'': \z{[]}\keyword{int}.
-		\item Actually a ``view'' into an underlying array.
-			\begin{itemize}
-				\item Go creates and manages the underlying array automatically for you.
-			\end{itemize}
-	\end{itemize}
+    \begin{itemize}
+        \item Dimensionless ``arrays'': \z{[]}\keyword{int}.
+        \item Actually a ``view'' into an underlying array.
+            \begin{itemize}
+                \item Go creates and manages the underlying array automatically for you.
+            \end{itemize}
+    \end{itemize}
 \begin{lstlisting}
 var things []string
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 things = append(things, "doorbells")
 things = append(things, "sleighbells", "schnitzel")
 fmt.Println(len(things), things) 
@@ -487,15 +515,18 @@ fmt.Println(len(things), things)
 \end{frame}
 
 \begin{frame}[fragile]{Slices}
-	\begin{itemize}
-		\item Can also specify a slice of values as a literal.
-	\end{itemize}
+    \begin{itemize}
+        \item Can also specify a slice of values as a literal.
+    \end{itemize}
 \begin{lstlisting}
 things := []string{
     "doorbells",
     "sleighbells",
     "schnitzel",
 }
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 primes := []int{2, 3, 5, 7, 11, 13}
 lowPrimes := slices.Delete(primes, 3, len(primes))
 fmt.Println(lowPrimes)
@@ -507,13 +538,17 @@ fmt.Println(lowPrimes)
 \begin{lstlisting}
 var Ages map[string]int
 Ages = make(map[string]int)
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 Ages["Alice"] = 14
 Ages["Bob"] = 22
 Ages["Charlie"] = 27
 Ages["Daria"] = 42
 fmt.Println(Ages)
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 for name, age := range Ages {
     if age >= 18 {
         fmt.Printf("%s may vote.\n", name)
@@ -532,7 +567,8 @@ Ages := map[string]int{
     "Daria": 42,
 }
 fmt.Println(Ages)
-
+\end{lstlisting}
+\begin{lstlisting}
 for name, age := range Ages {
     if age >= 18 {
         fmt.Printf("%s may vote.\n", name)
@@ -546,17 +582,22 @@ for name, age := range Ages {
 \begin{lstlisting}
 aliceAge := Ages["Alice"]      // 14
 eveAge := Ages["Eve"]          // 0
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 aliceAge, exists := Ages["Alice"]      // 14, true
 eveAge, exists := Ages["Eve"]          // 0, false
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 Ages["Eve"] = 20
 delete(Ages, "Bob")
-
-if _, exists := Ages[name] {
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+if _, exists := Ages[name]; exists {
     fmt.Prinln("We do know about", name)
 }
-
 if age, exists := Ages[name]; exists {
     fmt.Printf("We know %s's age is %d.\n", name, age)
 } else {
@@ -565,31 +606,45 @@ if age, exists := Ages[name]; exists {
 \end{lstlisting}
 \end{frame}
 
+\section{What Makes Go Different}
 \subsection{Object Oriented Features}
 \begin{frame}[fragile]{Structures}
 \begin{lstlisting}
 type Triangle struct {
-    Base int
+    Base   int
     Height int
-    X int
-    Y int
-}
 
+    // Reference point
+    X      int
+    Y      int
+}
+\end{lstlisting}
+\begin{onlyenv}<2>
+\begin{lstlisting}
 var t1 Triangle
+t1.Base = 37
+t1.Height = 15
+t1.X = 11
+t1.Y = 22
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<3>
+\begin{lstlisting}
 var t2 Triange = Triangle{Base: 3, Height: 1}
+
+fmt.Println("t2's base is", t2.Base)
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<4>
+\begin{lstlisting}
 t3 := Triangle{
     Base:   100,
     Height: 42,
     X:      -3,
     Y:      14,
 }
-
-t1.Base = 37
-t1.Height = 15
-t1.X = 11
-t1.Y = 22
-fmt.Println("t2's base is", t2.Base)
 \end{lstlisting}
+\end{onlyenv}
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
@@ -685,15 +740,17 @@ func (r Rectangle) Area() float64 {
 
 \begin{frame}[fragile]{Composition}
 \begin{lstlisting}
+// Regular Polygons
 type Polygon struct {
     baseShape
     Sides  int
-    Length float64
-    Radius float64
+    Length float64  // Length of each side
+    Radius float64  // Radius of inscribed circle
 }
 
 func (p Polygon) Area() float64 {
-    return float64(p.Sides) / 2.0 * p.Length * p.Radius
+    return ((float64(p.Sides) / 2.0) 
+            * p.Length * p.Radius)
 }
 \end{lstlisting}
 \end{frame}
@@ -718,7 +775,9 @@ shapes := []Shape{
     Circle{X: 0, Y: 22, Radius: 1.5},
     Rectangle{Height: 100, width: 50},
 }
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 for i, shape := range shapes {
     fmt.Println("#%d area=%f\n", i, shape.Area())
     shape.Translate(-1, -1)
@@ -800,11 +859,7 @@ func f(mystery any) {    // any == interface{}
 \end{lstlisting}
 \end{frame}
 
-\section[Concurrency]{Concurrency}
-\begin{lstlisting}
-\end{lstlisting}
-\subsection{Goroutines}
-
+\subsection{Concurrency}
 \begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
 \begin{lstlisting}
 func countdown() {
@@ -844,91 +899,6 @@ func main() {
 \end{lstlisting}
 \end{frame}
 
-
-
-
-\subsection{Thread-Safe Memory Access}
-\begin{frame}[fragile]{Global ID Generation (Na\"\i ve)}
-\begin{lstlisting}
-type GameState struct {
-    NextMessageID int
-}
-\end{lstlisting}
-\pause
-\begin{lstlisting}
-var gameServer GameState
-
-gameServer.NextMessageID++
-client.ID = gameServer.NextMessageID
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]{Global ID Generation (Mutex)}
-\begin{onlyenv}<1>
-\begin{lstlisting}
-type GameState struct {
-    NextMessageID int
-    Lock          sync.Mutex
-}
-\end{lstlisting}
-\end{onlyenv}
-\begin{onlyenv}<2->
-\begin{lstlisting}
-type GameState struct {
-    NextMessageID int
-    Lock          sync.RWMutex
-}
-\end{lstlisting}
-\end{onlyenv}
-\begin{onlyenv}<3-4>
-\begin{lstlisting}
-func (state *GameState) GetNextID() int {
-    state.Lock.Lock()
-    state.NextMessageID++
-    nextID := state.MessageID
-    state.Lock.Unlock()
-    return nextID
-}
-\end{lstlisting}
-\end{onlyenv}
-\begin{onlyenv}<5>
-\begin{lstlisting}
-func (state *GameState) GetNextID() int {
-    state.Lock.Lock()
-    defer state.Lock.Unlock()
-
-    state.NextMessageID++
-    return state.NextMessageID
-}
-\end{lstlisting}
-\end{onlyenv}
-\begin{onlyenv}<4->
-\begin{lstlisting}
-client.ID = gameServer.GetNextID()
-\end{lstlisting}
-\end{onlyenv}
-\end{frame}
-
-\begin{frame}[fragile]{Global ID Generation (Channel)}
-\begin{lstlisting}
-func serveMessageIDs(c chan int) int {
-    var id int
-    for {
-        c <- id
-        c++
-    }
-}
-\end{lstlisting}
-\pause
-\begin{lstlisting}
-IDSource := make(chan int)
-go serveMessageIDs(IDSource)
-\end{lstlisting}
-\pause
-\begin{lstlisting}
-client.ID = <-IDSource
-\end{lstlisting}
-\end{frame}
 
 \begin{frame}[fragile]{Channels}
 \begin{lstlisting}
@@ -1029,10 +999,216 @@ func main() {
 \end{onlyenv}
 \end{frame}
 
-\section{Backup}
-\subsection{Contexts}
 
-%
-% backup
-% contexts
+\subsection{Thread-Safe Memory Access}
+\begin{frame}[fragile]{Global ID Generation (Na\"\i ve)}
+\begin{lstlisting}
+type GameState struct {
+    NextMessageID int
+}
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+var gameServer GameState
+
+gameServer.NextMessageID++
+client.ID = gameServer.NextMessageID
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Global ID Generation (Mutex)}
+\begin{onlyenv}<1->
+\begin{lstlisting}
+type GameState struct {
+    nextMessageID int
+    lock          sync.Mutex
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<1>
+\begin{lstlisting}
+func (state *GameState) GetNextID() int {
+
+
+
+
+
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<2>
+\begin{lstlisting}
+func (state *GameState) GetNextID() int {
+    state.lock.Lock()
+    state.nextMessageID++
+    nextID := state.MessageID
+    state.lock.Unlock()
+    return nextID
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<3>
+\begin{lstlisting}
+func (state *GameState) GetNextID() int {
+    state.lock.Lock()
+    defer state.lock.Unlock()
+
+    state.nextMessageID++
+    return state.nextMessageID
+}
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<1->
+\begin{lstlisting}
+// in many random goroutines...
+client.ID = gameServer.GetNextID()
+\end{lstlisting}
+\end{onlyenv}
+\end{frame}
+
+\begin{frame}[fragile]{Global ID Generation (Channel)}
+\begin{lstlisting}
+func serveMessageIDs(c chan int) int {
+    var id int
+    for {
+        c <- id
+        c++
+    }
+}
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+// start up the service
+IDSource := make(chan int)
+go serveMessageIDs(IDSource)
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+// In many random goroutines...
+client.ID = <-IDSource
+\end{lstlisting}
+\end{frame}
+
+\subsection{Contexts}
+\begin{frame}[fragile]{Contexts}
+\begin{lstlisting}
+func collectData(stream <-chan string) error {
+    for {
+        data, isClosed := <-stream
+        if isClosed {
+            return nil
+        }
+        if err := doSomething(data); err != nil {
+            return err
+        }
+    }
+}
+
+// elsewhere
+collectData(stream)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Contexts}
+\begin{lstlisting}
+func collectData(ctx context.Context, 
+                 stream <-chan string) error {
+    for {
+        select {
+        case <-ctx.Done():
+            return nil
+        case data, isClosed := <-stream:
+            if isClosed { return nil }
+            if err := doSomething(data); err != nil {
+                return err
+            }
+        }
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Contexts}
+\begin{lstlisting}
+// caller
+
+ctx, cancel := context.WithTimeout(
+    context.Background(), 
+    5 * time.Second
+)
+defer cancel()
+
+if err := collectData(ctx, stream); err != nil {
+    panic(err)
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Contexts}
+\begin{lstlisting}
+func collectData(ctx context.Context, 
+                 stream <-chan string) error {
+    for {
+        select {
+        case <-ctx.Done():
+            return nil
+        case <-time.After(2 * time.Second):
+            log.Print("collectData taking too long")
+        case data, isClosed := <-stream:   
+            if isClosed { return nil }
+            if err := doSomething(data); err != nil {
+                return err
+            }
+        }
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\subsection{JSON Encoding Made Easy}
+\begin{frame}[fragile]{JSON}
+\begin{lstlisting}
+import "encoding/json"
+
+type User struct {
+    Name   string   `json:"name"`
+    ID     int      `json:",omitempty"`
+    Attrs  []string `json:"attributes,omitempty"`
+    Secret []byte   `json:"-"`
+}
+
+data := User{
+    Name: "steve", 
+    ID: 42, 
+    Attrs: []string{"foo","bar"}, 
+    Secret: sdata
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{JSON}
+\begin{lstlisting}
+import "encoding/json"
+
+type User struct {
+    Name   string   `json:"name"`
+    ID     int      `json:",omitempty"`
+    Attrs  []string `json:"attributes,omitempty"`
+    Secret []byte   `json:"-"`
+}
+
+encoded, err := json.Marshal(data)
+// {"name":"steve","ID":42,"attributes":["foo","bar"]}
+
+var inputData User
+err := json.Unmarshal(jsonBytes, &inputData)
+\end{lstlisting}
+\end{frame}
+\section{}
+\subsection{}
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=.9\textheight]{gopher}
+    \end{center}
+\end{frame}
 \end{document}
