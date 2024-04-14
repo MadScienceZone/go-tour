@@ -1,5 +1,5 @@
-\documentclass[pdf]{beamer}
-\newcommand\REV{v0.1.0}
+\documentclass[pdf,t]{beamer}
+\newcommand\REV{v1.0.0}
 % Berlin Berkeley Warsaw
 \newcommand\z[1]{\texttt{#1}}
 \usepackage{listings}
@@ -8,7 +8,7 @@
 \newcommand\keyword[1]{{\color{blue}\z{#1}}}
 \newcommand\blocked[1]{{\color{red}\z{#1}}}
 \newcommand\gostring[1]{{\color{orange!90!black}\z{#1}}}
-\newcommand\playground[1]{{\color{gray}\z{#1}}}
+\newcommand\playground[1]{\framebox{\color{gray}\z{https://go.dev/play/#1}}}
 \lstset{
     language=Go,
     basicstyle=\ttfamily,
@@ -203,6 +203,7 @@ type Shape struct {
 \end{frame}
 
 \begin{frame}[fragile]{Hello, World}
+\playground{}
 \begin{lstlisting}
 /* Standard-issue "Hello, World" program in Go */
 
@@ -305,7 +306,7 @@ const (
 
 \begin{frame}[fragile]{``Factored'' Notation and iota}
 \begin{onlyenv}<1->
-\playground{https://go.dev/play/p/LSHu1VKUz20}
+\playground{p/LSHu1VKUz20}
 \begin{lstlisting}
 type MessageType byte
 const (
@@ -348,7 +349,7 @@ const (
 \end{onlyenv}
 \end{frame}
 \begin{frame}[fragile]{``Factored'' Notation and iota Expressions}
-\playground{https://go.dev/play/p/LSHu1VKUz20}
+\playground{p/LSHu1VKUz20}
 \begin{lstlisting}
 type MessageType byte
 const (
@@ -460,6 +461,7 @@ fmt.Println("I know", len(things), "things.")
 \end{frame}
 
 \begin{frame}[fragile]{Arrays}
+    \playground{p/rexZjp6SdKD}
     \begin{itemize}
         \item Or you can specify an array literal value to use in an expression or assign to a variable
 \begin{lstlisting}
@@ -479,6 +481,7 @@ fmt.Println("I know", len(things), "things.")
 \end{frame}
 
 \begin{frame}[fragile]{Slices}
+    \playground{p/rexZjp6SdKD}
     \begin{itemize}
         \item Specify a range \z{[}$n$\z{:}$m$\z{]} as the index into an array to get a subset of the array values
             with indices from $n$ to $m-1$.
@@ -495,6 +498,7 @@ fmt.Println("Some things:", things[:])
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Slices}
+    \playground{p/rexZjp6SdKD}
     \begin{itemize}
         \item Dimensionless ``arrays'': \z{[]}\keyword{int}.
         \item Actually a ``view'' into an underlying array.
@@ -515,6 +519,7 @@ fmt.Println(len(things), things)
 \end{frame}
 
 \begin{frame}[fragile]{Slices}
+    \playground{p/rexZjp6SdKD}
     \begin{itemize}
         \item Can also specify a slice of values as a literal.
     \end{itemize}
@@ -535,6 +540,7 @@ fmt.Println(lowPrimes)
 \end{frame}
 
 \begin{frame}[fragile]{Maps}
+\playground{p/Bfs6kEUKwve}
 \begin{lstlisting}
 var Ages map[string]int
 Ages = make(map[string]int)
@@ -547,18 +553,9 @@ Ages["Charlie"] = 27
 Ages["Daria"] = 42
 fmt.Println(Ages)
 \end{lstlisting}
-\pause
-\begin{lstlisting}
-for name, age := range Ages {
-    if age >= 18 {
-        fmt.Printf("%s may vote.\n", name)
-    } else {
-        fmt.Printf("%s is not eligible.\n", name)
-    }
-}
-\end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Maps}
+\playground{p/Bfs6kEUKwve}
 \begin{lstlisting}
 Ages := map[string]int{
     "Alice": 14,
@@ -579,43 +576,52 @@ for name, age := range Ages {
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Maps}
+\playground{p/Bfs6kEUKwve}
+\begin{onlyenv}<1->
 \begin{lstlisting}
 aliceAge := Ages["Alice"]      // 14
 eveAge := Ages["Eve"]          // 0
 \end{lstlisting}
-\pause
+\end{onlyenv}
+\begin{onlyenv}<2->
 \begin{lstlisting}
 aliceAge, exists := Ages["Alice"]      // 14, true
 eveAge, exists := Ages["Eve"]          // 0, false
 \end{lstlisting}
-\pause
+\end{onlyenv}
+\begin{onlyenv}<3->
 \begin{lstlisting}
 Ages["Eve"] = 20
 delete(Ages, "Bob")
 \end{lstlisting}
-\pause
+\end{onlyenv}
+\begin{onlyenv}<4>
 \begin{lstlisting}
 if _, exists := Ages[name]; exists {
     fmt.Prinln("We do know about", name)
 }
+\end{lstlisting}
+\end{onlyenv}
+\begin{onlyenv}<5>
+\begin{lstlisting}
 if age, exists := Ages[name]; exists {
     fmt.Printf("We know %s's age is %d.\n", name, age)
 } else {
     fmt.Println("We don't know", name)
 }
 \end{lstlisting}
+\end{onlyenv}
 \end{frame}
 
 \section{What Makes Go Different}
 \subsection{Object Oriented Features}
 \begin{frame}[fragile]{Structures}
+\playground{p/TClHUvPovi0}
 \begin{lstlisting}
 type Triangle struct {
     Base   int
     Height int
-
-    // Reference point
-    X      int
+    X      int // Reference point
     Y      int
 }
 \end{lstlisting}
@@ -630,7 +636,7 @@ t1.Y = 22
 \end{onlyenv}
 \begin{onlyenv}<3>
 \begin{lstlisting}
-var t2 Triange = Triangle{Base: 3, Height: 1}
+var t2 Triangle = Triangle{Base: 3, Height: 1}
 
 fmt.Println("t2's base is", t2.Base)
 \end{lstlisting}
@@ -648,9 +654,11 @@ t3 := Triangle{
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
+\playground{p/TClHUvPovi0}
 \begin{lstlisting}
 func Area(t Triangle) float64 {
-    return (t.Base * t.Height) / 2.0
+    return (float64(t.Base) * 
+            float64(t.Height)) / 2.0
 }
 
 func Translate(t Triangle, dx, dy int) Triangle {
@@ -665,9 +673,11 @@ t2 = Translate(t2, +3, -2)
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
+\playground{p/TClHUvPovi0}
 \begin{lstlisting}
 func Area(t Triangle) float64 {
-    return (t.Base * t.Height) / 2.0
+    return (float64(t.Base) * 
+            float64(t.Height)) / 2.0
 }
 
 func Translate(t *Triangle, dx, dy int) {
@@ -681,9 +691,11 @@ Translate(&t2, +3, -2)
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
+\playground{p/TClHUvPovi0}
 \begin{lstlisting}
 func (t Triangle) Area() float64 {
-    return (t.Base * t.Height) / 2.0
+    return (float64(t.Base) * 
+            float64(t.Height)) / 2.0
 }
 
 func (t *Triangle) Translate(dx, dy int) {
@@ -697,68 +709,76 @@ t2.Translate(+3, -2)
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
+\playground{p/qp2nc6gywLr}
 \begin{lstlisting}
-type baseShape struct {
+type BaseShape struct {
     X int
     Y int
 }
 
-func (s *baseShape) Translate(dx, dy int) {
-    s.X += dx
-    s.Y += dy
+func (s BaseShape) ReferencePoint() (int, int) {
+    return s.X, s.Y
 }
+
+// (We'll set aside the Translate method for now to
+// keep the in-class example simple.)
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
+\playground{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Triangle struct {
-    baseShape
+    BaseShape
     Base   int
     Height int
 }
 
 func (t Triangle) Area() float64 {
-    return (t.Base * t.Height) / 2.0
+    return (float64(t.Base) * 
+            float64(t.Height)) / 2.0
 }
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
+\playground{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Rectangle struct {
-    baseShape
+    BaseShape
     Width  int
     Height int
 }
 
 func (r Rectangle) Area() float64 {
-    return r.Width * r.Height
+    return float64(r.Width * r.Height)
 }
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
+\playground{p/qp2nc6gywLr}
 \begin{lstlisting}
 // Regular Polygons
 type Polygon struct {
-    baseShape
+    BaseShape
     Sides  int
     Length float64  // Length of each side
     Radius float64  // Radius of inscribed circle
 }
 
 func (p Polygon) Area() float64 {
-    return ((float64(p.Sides) / 2.0) 
-            * p.Length * p.Radius)
+    return (float64(p.Sides) / 2.0) *
+            p.Length * p.Radius
 }
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
+\playground{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Circle struct {
-    baseShape
+    BaseShape
     Radius float64
 }
 
@@ -769,29 +789,35 @@ func (c Circle) Area() float64 {
 \end{frame}
 
 \begin{frame}[fragile]{Polymorphism}
+\playground{p/qp2nc6gywLr}
 \begin{lstlisting}
 shapes := []Shape{
-    Triangle{X: 3, Y: 12, Base: 3, Height: 2},
-    Circle{X: 0, Y: 22, Radius: 1.5},
-    Rectangle{Height: 100, width: 50},
+    Triangle{BaseShape:BaseShape{X: 3, Y: 12}, 
+             Base: 3, Height: 2},
+    Circle{BaseShape:BaseShape{Y: 22}, Radius: 1.5},
+    Rectangle{Height: 100, Width: 50},
 }
 \end{lstlisting}
 \pause
 \begin{lstlisting}
 for i, shape := range shapes {
-    fmt.Println("#%d area=%f\n", i, shape.Area())
-    shape.Translate(-1, -1)
+    x, y := shape.ReferencePoint()
+    fmt.Printf("#%d at (%d,%d), area=%f\n",
+               i, x, y, shape.Area())
 }
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Polymorphism}
+\begin{frame}[fragile]{Polymorphism via Interfaces}
+\playground{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Shape interface {
     Area() float64
-    Translate(int, int)
+    ReferencePoint() (int, int)
 }
-
+\end{lstlisting}
+\pause
+\begin{lstlisting}
 func reportArea(s Shape) {
     fmt.Printf("The area is %f\n", s.Area()
 }
@@ -799,6 +825,7 @@ func reportArea(s Shape) {
 \end{frame}
 
 \begin{frame}[fragile]{Type Assertions}
+\playground{p/dy952C3yZUX}
 \begin{onlyenv}<1-2>
 \begin{lstlisting}
 f(42)
@@ -840,10 +867,10 @@ func f(mystery any) {    // any == interface{}
 \end{frame}
 
 \begin{frame}[fragile]{Type Switch}
+\playground{p/dy952C3yZUX}
 \begin{lstlisting}
 f(42)
 f("hello")
-
 func f(mystery any) {    // any == interface{}
     var v int
     
@@ -861,6 +888,7 @@ func f(mystery any) {    // any == interface{}
 
 \subsection{Concurrency}
 \begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
+\playground{p/FJNbOcNYI8-}
 \begin{lstlisting}
 func countdown() {
     for i := 10; i >= 0; i-- {
@@ -881,6 +909,7 @@ func main() {
 \end{frame}
 
 \begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
+\playground{p/FJNbOcNYI8-}
 \begin{lstlisting}
 func countdown() {
     for i := 10; i >= 0; i-- {
@@ -901,6 +930,7 @@ func main() {
 
 
 \begin{frame}[fragile]{Channels}
+\playground{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte)
 \end{lstlisting}
@@ -918,6 +948,7 @@ fmt.Println("Read", x, "from channel")
 \end{frame}
 
 \begin{frame}[fragile]{Channels}
+\playground{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte)
 \end{lstlisting}
@@ -933,6 +964,7 @@ fmt.Println("Read", x, "from channel")
 \end{frame}
 
 \begin{frame}[fragile]{Channels}
+\playground{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte)
 go func(c chan byte) {
@@ -946,6 +978,7 @@ ch <- 42
 \end{frame}
 
 \begin{frame}[fragile]{Buffered Channels}
+\playground{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte, 1)
 \end{lstlisting}
@@ -962,14 +995,13 @@ fmt.Println("Read", x, "from channel")
 
 \subsection{Error Handling}
 \begin{frame}[fragile]{Error Values}
-\begin{onlyenv}<1>
 \begin{lstlisting}
 func main() {
     var intval int
     var err    error
 
-    for i, arg := range os.Args {
-        intval, err := strconv.Atoi(arg)
+    for i, arg := range os.Args[1:] {
+        intval, err = strconv.Atoi(arg)
         if err != nil {
             fmt.Printf("Arg #%d (\"%s\"): %v.\n",
                        i, arg, err)
@@ -979,29 +1011,12 @@ func main() {
     }
 }
 \end{lstlisting}
-\end{onlyenv}
-\begin{onlyenv}<2>
-\begin{lstlisting}
-func main() {
-    var intval int
-    var err    error
-
-    for i, arg := range os.Args {
-        intval, err = strconv.Atoi(arg); err != nil {
-            fmt.Printf("Arg #%d (\"%s\"): %v.\n",
-                       i, arg, err)
-        } else {
-            fmt.Printf("Arg #%d == %d\n", i, intval)
-        }
-    }
-}
-\end{lstlisting}
-\end{onlyenv}
 \end{frame}
 
 
 \subsection{Thread-Safe Memory Access}
 \begin{frame}[fragile]{Global ID Generation (Na\"\i ve)}
+\playground{p/iOxsFX\_TSaa}
 \begin{lstlisting}
 type GameState struct {
     NextMessageID int
@@ -1017,6 +1032,7 @@ client.ID = gameServer.NextMessageID
 \end{frame}
 
 \begin{frame}[fragile]{Global ID Generation (Mutex)}
+\playground{p/iOxsFX\_TSaa}
 \begin{onlyenv}<1->
 \begin{lstlisting}
 type GameState struct {
@@ -1066,13 +1082,35 @@ client.ID = gameServer.GetNextID()
 \end{onlyenv}
 \end{frame}
 
-\begin{frame}[fragile]{Global ID Generation (Channel)}
+\begin{frame}[fragile]{Global ID Generation (Mutex)}
+\playground{p/iOxsFX\_TSaa}
 \begin{lstlisting}
-func serveMessageIDs(c chan int) int {
+func main() {
+    var gameServer GameState
+    var wg         sync.WaitGroup
+    for i := range 100 {
+        wg.Add(1)
+        id := i
+        go func() {
+            defer wg.Done()
+            fmt.Printf("Goroutine #%d, ID=%d\n", id, 
+                       gameServer.GetNextID())
+        }()
+    }
+    wg.Wait()
+}
+\end{lstlisting}
+\end{frame}
+    
+
+\begin{frame}[fragile]{Global ID Generation (Channel)}
+\playground{p/mRfglxbH-kI}
+\begin{lstlisting}
+func serveMessageIDs(c chan<- int) {
     var id int
     for {
         c <- id
-        c++
+        id++
     }
 }
 \end{lstlisting}
@@ -1091,11 +1129,12 @@ client.ID = <-IDSource
 
 \subsection{Contexts}
 \begin{frame}[fragile]{Contexts}
+\playground{p/cPSNhVfS8r-}
 \begin{lstlisting}
 func collectData(stream <-chan string) error {
     for {
-        data, isClosed := <-stream
-        if isClosed {
+        data, ok := <-stream
+        if !ok {
             return nil
         }
         if err := doSomething(data); err != nil {
@@ -1110,6 +1149,7 @@ collectData(stream)
 \end{frame}
 
 \begin{frame}[fragile]{Contexts}
+\playground{p/cPSNhVfS8r-}
 \begin{lstlisting}
 func collectData(ctx context.Context, 
                  stream <-chan string) error {
@@ -1117,8 +1157,8 @@ func collectData(ctx context.Context,
         select {
         case <-ctx.Done():
             return nil
-        case data, isClosed := <-stream:
-            if isClosed { return nil }
+        case data, ok := <-stream:
+            if !ok { return nil }
             if err := doSomething(data); err != nil {
                 return err
             }
@@ -1129,13 +1169,12 @@ func collectData(ctx context.Context,
 \end{frame}
 
 \begin{frame}[fragile]{Contexts}
+\playground{p/cPSNhVfS8r-}
 \begin{lstlisting}
 // caller
 
 ctx, cancel := context.WithTimeout(
-    context.Background(), 
-    5 * time.Second
-)
+    context.Background(), 5 * time.Second)
 defer cancel()
 
 if err := collectData(ctx, stream); err != nil {
@@ -1145,6 +1184,7 @@ if err := collectData(ctx, stream); err != nil {
 \end{frame}
 
 \begin{frame}[fragile]{Contexts}
+\playground{p/cPSNhVfS8r-}
 \begin{lstlisting}
 func collectData(ctx context.Context, 
                  stream <-chan string) error {
@@ -1154,29 +1194,26 @@ func collectData(ctx context.Context,
             return nil
         case <-time.After(2 * time.Second):
             log.Print("collectData taking too long")
-        case data, isClosed := <-stream:   
-            if isClosed { return nil }
+        case data, ok := <-stream:   
+            if !ok { return nil }
             if err := doSomething(data); err != nil {
                 return err
             }
-        }
-    }
-}
+        }}}
 \end{lstlisting}
 \end{frame}
 
 \subsection{JSON Encoding Made Easy}
 \begin{frame}[fragile]{JSON}
+\playground{p/\_KcMkqhhzbZ}
 \begin{lstlisting}
 import "encoding/json"
-
 type User struct {
     Name   string   `json:"name"`
     ID     int      `json:",omitempty"`
     Attrs  []string `json:"attributes,omitempty"`
     Secret []byte   `json:"-"`
 }
-
 data := User{
     Name: "steve", 
     ID: 42, 
@@ -1187,6 +1224,7 @@ data := User{
 \end{frame}
 
 \begin{frame}[fragile]{JSON}
+\playground{p/\_KcMkqhhzbZ}
 \begin{lstlisting}
 import "encoding/json"
 
@@ -1208,7 +1246,8 @@ err := json.Unmarshal(jsonBytes, &inputData)
 \subsection{}
 \begin{frame}{}
     \begin{center}
-        \includegraphics[height=.9\textheight]{gopher}
+        \includegraphics[height=.85\textheight]{gopher}
+        \z{github.com/MadScienceZone/go-tour}
     \end{center}
 \end{frame}
 \end{document}
