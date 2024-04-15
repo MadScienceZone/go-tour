@@ -1,5 +1,5 @@
 \documentclass[pdf,t]{beamer}
-\newcommand\REV{v1.1.0}
+\newcommand\REV{v1.1.1}
 % Berlin Berkeley Warsaw
 \newcommand\z[1]{\texttt{#1}}
 \usepackage{listings}
@@ -818,6 +818,27 @@ type Circle struct {
 func (c Circle) Area() float64 {
     return math.Pi * math.Pow(c.Radius, 2)
 }
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Composition}
+\playground{p/qp2nc6gywLr}
+\begin{lstlisting}
+c := Circle{
+    BaseShape: BaseShape{
+        X: 1, 
+        Y: 2,
+    }, 
+    Radius: 1.5,
+}
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+fmt.Println(c.BaseShape.X, c.BaseShape.Y, 
+            c.Radius, c.Area())
+\end{lstlisting}
+\pause
+\begin{lstlisting}
+fmt.Println(c.X, c.Y, c.Radius, c.Area())
 \end{lstlisting}
 \end{frame}
 
