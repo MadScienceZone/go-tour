@@ -14,6 +14,8 @@ It then goes on to cover in more detail Go's more unique aspects, highlighting t
 
 Code samples are provided in the `examples` directory. They are also loaded into the Go playground. Links to the playground code appear at the top of the corresponding slides in case students want to try playing with the examples live during the class.
 
+This is only to demonstrate features of the Go language itself. The steps required to install a Go compiler, set up a development environment, and manage Go modules are out of scope for this presentation. The [Go Playground](https://go.dev/play) is suggested for trying out the exercises.
+
 ## Timing
 During a practice run of the material for this presentation, trying to keep the pace brisk (especially for the early bits where we're laying the foundation of basic Go syntax and such), the timing for when we started each major section turned out thusly:
 ```
