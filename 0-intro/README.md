@@ -1,5 +1,5 @@
 # Presentation #0: Whirlwind Tour of Go
-This 30-40 minute lesson is intended to introduce Go to an audience of experienced developers. It very quickly shows what Go syntax is like, quickly glossing over how it's already similar to other C-derived languages but slowing down to cover where it extends or diverts from that base.
+This 50-60 minute lesson is intended to introduce Go to an audience of experienced developers. It very quickly shows what Go syntax is like, quickly glossing over how it's already similar to other C-derived languages but slowing down to cover where it extends or diverts from that base.
 It then goes on to cover in more detail Go's more unique aspects, highlighting the concepts of
   * The Go ecosystem, including automatic documentation generation and importing 3rd party packages 
   * Factored notation
@@ -13,6 +13,8 @@ It then goes on to cover in more detail Go's more unique aspects, highlighting t
   * JSON support
 
 Code samples are provided in the `examples` directory. They are also loaded into the Go playground. Links to the playground code appear at the top of the corresponding slides in case students want to try playing with the examples live during the class.
+
+This is only to demonstrate features of the Go language itself. The steps required to install a Go compiler, set up a development environment, and manage Go modules are out of scope for this presentation. The [Go Playground](https://go.dev/play) is suggested for trying out the exercises.
 
 ## Timing
 During a practice run of the material for this presentation, trying to keep the pace brisk (especially for the early bits where we're laying the foundation of basic Go syntax and such), the timing for when we started each major section turned out thusly:
