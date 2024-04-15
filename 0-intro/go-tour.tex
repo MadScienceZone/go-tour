@@ -1,5 +1,5 @@
 \documentclass[pdf,t]{beamer}
-\newcommand\REV{v1.0.1}
+\newcommand\REV{v1.1.0}
 % Berlin Berkeley Warsaw
 \newcommand\z[1]{\texttt{#1}}
 \usepackage{listings}
@@ -16,13 +16,13 @@
     identifierstyle=\color{green!70!black},
     commentstyle=\ttfamily\color{gray},
     stringstyle=\ttfamily\color{orange!90!black},
-    showstringspaces=true
+    showstringspaces=false
 }
 \mode<presentation>{\usetheme{Berlin}\useoutertheme{infolines}\useinnertheme{rounded}}
 \title{A Whirlwind Tour of Go}
 \subtitle{Just the Cool Parts}
 \author{Steve Willoughby}
-\date{13-Apr-2024\\{\tiny\REV}}
+\date{15-Apr-2024\\{\tiny\REV}}
 \begin{document}
 \begin{frame}
     \titlepage
@@ -64,6 +64,15 @@
     \end{itemize}
 \end{frame}
 \section{Introducing Go}
+\begin{frame}[c]{The Basics}
+	\begin{center}
+	\Huge This is the ``whirlwind'' part\dots
+
+		\bigskip
+
+	\Large (Laying a foundation of the basics so the more interesting discussions are understandable.)
+	\end{center}
+\end{frame}
 \subsection{The Basics}
 \begin{frame}{Intrinsic Data Types}
     \begin{itemize}
@@ -603,7 +612,41 @@ if age, exists := Ages[name]; exists {
 \end{onlyenv}
 \end{frame}
 
+\subsection{Error Handling}
+\begin{frame}[c]{Error Values}
+	\begin{center}
+	\Huge Error Handling
+	\end{center}
+\end{frame}
+\begin{frame}[fragile]{Error Values}
+\begin{lstlisting}
+func main() {
+    var intval int
+    var err    error
+
+    for i, arg := range os.Args[1:] {
+        intval, err = strconv.Atoi(arg)
+        if err != nil {
+            fmt.Printf("Arg #%d (\"%s\"): %v.\n",
+                       i, arg, err)
+        } else {
+            fmt.Printf("Arg #%d == %d\n", i, intval)
+        }
+    }
+}
+\end{lstlisting}
+\end{frame}
 \section{What Makes Go Different}
+\begin{frame}[c]{Object Oriented Features}
+	\begin{center}
+	\Huge Wherewith Object Orientation?
+
+		\bigskip
+
+		\Large (For a language without object classes\dots)
+	\end{center}
+\end{frame}
+
 \subsection{Object Oriented Features}
 \begin{frame}[fragile]{Structures}
 \playground{p/TClHUvPovi0}
@@ -780,22 +823,38 @@ func (c Circle) Area() float64 {
 
 \begin{frame}[fragile]{Polymorphism}
 \playground{p/qp2nc6gywLr}
+\begin{onlyenv}<1>
 \begin{lstlisting}
 shapes := []Shape{
-    Triangle{BaseShape:BaseShape{X: 3, Y: 12}, 
-             Base: 3, Height: 2},
+    Triangle{
+        BaseShape: BaseShape{
+            X: 3, 
+            Y: 12,
+        }, 
+        Base: 3, 
+        Height: 2,
+    },
     Circle{BaseShape:BaseShape{Y: 22}, Radius: 1.5},
     Rectangle{Height: 100, Width: 50},
 }
 \end{lstlisting}
-\pause
+\end{onlyenv}
+\begin{onlyenv}<2>
 \begin{lstlisting}
+shapes := []Shape{
+    Triangle{BaseShape: BaseShape{X: 3, Y: 12}, 
+        Base: 3, Height: 2},
+    Circle{BaseShape:BaseShape{Y: 22}, Radius: 1.5},
+    Rectangle{Height: 100, Width: 50},
+}
+
 for i, shape := range shapes {
     x, y := shape.ReferencePoint()
     fmt.Printf("#%d at (%d,%d), area=%f\n",
                i, x, y, shape.Area())
 }
 \end{lstlisting}
+\end{onlyenv}
 \end{frame}
 
 \begin{frame}[fragile]{Polymorphism via Interfaces}
@@ -814,6 +873,11 @@ func reportArea(s Shape) {
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}[c]{Type Assertions}
+	\begin{center}
+	\Huge Type Assertions
+	\end{center}
+\end{frame}
 \begin{frame}[fragile]{Type Assertions}
 \playground{p/dy952C3yZUX}
 \begin{onlyenv}<1-2>
@@ -877,6 +941,15 @@ func f(mystery any) {    // any == interface{}
 \end{frame}
 
 \subsection{Concurrency}
+\begin{frame}[c]{Goroutines}
+	\begin{center}
+	\Huge Concurrency!
+	
+		\bigskip
+
+	\Large (Goroutines and Channels and some other things)
+	\end{center}
+\end{frame}
 \begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
 \playground{p/FJNbOcNYI8-}
 \begin{lstlisting}
@@ -929,7 +1002,6 @@ ch := make(chan byte)
 fmt.Println("Writing to channel")
 \end{lstlisting}
 \identifier{ch}\z{ <- 42}
-\pause
 \begin{lstlisting}
 fmt.Println("Reading from channel")
 x := <-ch
@@ -983,28 +1055,73 @@ fmt.Println("Read", x, "from channel")
 \end{lstlisting}
 \end{frame}
 
-\subsection{Error Handling}
-\begin{frame}[fragile]{Error Values}
-\begin{lstlisting}
-func main() {
-    var intval int
-    var err    error
 
-    for i, arg := range os.Args[1:] {
-        intval, err = strconv.Atoi(arg)
-        if err != nil {
-            fmt.Printf("Arg #%d (\"%s\"): %v.\n",
-                       i, arg, err)
-        } else {
-            fmt.Printf("Arg #%d == %d\n", i, intval)
-        }
-    }
+\begin{frame}[c]{Select}
+	\begin{center}
+	\Huge Select
+	\end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Select (C)}
+\begin{lstlisting}[language=c]
+#include <sys/select.h>
+fd_set read_handles, write_handles, err_handles;
+struct timeval t;
+int sel = 0;
+
+FD_ZERO(&read_handles);
+FD_ZERO(&write_handles);
+FD_ZERO(&err_handles);
+/* set bits for handles you're interested in */
+t.tv_sec = 1;
+t.tv_usec = 0;
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Select (C)}
+\begin{lstlisting}[language=c]
+if ((sel = select(maxfd, &read_handles, 
+                  &write_handles, 
+                  &err_handles, &t)) == -1) {
+    /* error... */
+}
+else if (sel > 0) {
+    /* go back and check the bits in *_handles */
+}
+\end{lstlisting}
+\end{frame}
+\begin{frame}[fragile]{Select (Go)}
+\begin{lstlisting}
+select {
+case x := <-ichan:
+    // we could read from ichan, proceed
+    // with that...
+
+case ochan <- ovalue:
+    // we could write to ochan
+\end{lstlisting}
+\begin{onlyenv}<2>
+\begin{lstlisting}
+default:
+    // if we don't want the whole select to
+    // block, add a default case here.
+\end{lstlisting}
+\end{onlyenv}
+\begin{lstlisting}
 }
 \end{lstlisting}
 \end{frame}
 
 
 \subsection{Thread-Safe Memory Access}
+\begin{frame}[c]{Global ID Generation Examples}
+	\begin{center}
+	\Huge Thread-Safe Memory Access
+
+		\bigskip
+
+	\Large by example
+	\end{center}
+\end{frame}
 \begin{frame}[fragile]{Global ID Generation (Na\"\i ve)}
 \playground{p/iOxsFX\_TSaa}
 \begin{lstlisting}
@@ -1012,13 +1129,25 @@ type GameState struct {
     NextMessageID int
 }
 \end{lstlisting}
-\pause
-\begin{lstlisting}
-var gameServer GameState
 
-gameServer.NextMessageID++
-client.ID = gameServer.NextMessageID
+\begin{onlyenv}<2>
+\begin{lstlisting}
+var gameserver GameState
+
+// In many concurrent goroutines...
 \end{lstlisting}
+\identifier{gameServer}\z{.}\identifier{NextMessageID}\z{++}\\
+\identifier{client}\z{.}\identifier{ID}\z{ = }\identifier{gameServer}\z{.}\identifier{NextMessageID}
+\end{onlyenv}
+\begin{onlyenv}<3>
+\begin{lstlisting}
+var gameserver GameState
+
+// In many concurrent goroutines...
+\end{lstlisting}
+{\color{red}\z{gameServer.NextMessageID++~~~~~~~~~~~~~~~~// UNSAFE!}\\
+\z{client.ID = gameServer.NextMessageID~~~~~~// UNSAFE!}}
+\end{onlyenv}
 \end{frame}
 
 \begin{frame}[fragile]{Global ID Generation (Mutex)}
@@ -1093,6 +1222,15 @@ func main() {
 \end{frame}
     
 
+\begin{frame}[c]{Global ID Generation (Channel)}
+	\begin{center}
+	\Huge But that's not very idiomatic for Go.
+
+	\bigskip
+
+		\Large Here's a much better approach\dots
+	\end{center}
+\end{frame}
 \begin{frame}[fragile]{Global ID Generation (Channel)}
 \playground{p/mRfglxbH-kI}
 \begin{lstlisting}
@@ -1117,7 +1255,18 @@ client.ID = <-IDSource
 \end{lstlisting}
 \end{frame}
 
+\section{Bonus/Backup Material}
+\begin{frame}[c]{Bonus/Backup Material}
+	\begin{center}
+	\Huge Some more cool stuff if time allows\dots
+	\end{center}
+\end{frame}
 \subsection{Contexts}
+\begin{frame}[c]{Contextx}
+	\begin{center}
+	\Huge Contexts
+	\end{center}
+\end{frame}
 \begin{frame}[fragile]{Contexts}
 \playground{p/cPSNhVfS8r-}
 \begin{lstlisting}
@@ -1193,6 +1342,12 @@ func collectData(ctx context.Context,
 \end{lstlisting}
 \end{frame}
 
+\subsection{JSON Encoding Made Easy}
+\begin{frame}[c]{JSON}
+	\begin{center}
+		\Huge Encoding (JSON)
+	\end{center}
+\end{frame}
 \subsection{JSON Encoding Made Easy}
 \begin{frame}[fragile]{JSON}
 \playground{p/\_KcMkqhhzbZ}
