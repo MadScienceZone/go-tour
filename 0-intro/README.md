@@ -16,6 +16,7 @@ Code samples are provided in the `examples` directory. They are also loaded into
 
 ## Timing
 During a practice run of the material for this presentation, trying to keep the pace brisk (especially for the early bits where we're laying the foundation of basic Go syntax and such), the timing for when we started each major section turned out thusly:
+```
   00:00 Intro
   03:52 Basics, Intrinsic Types
   12:13 Ecosystem
@@ -28,3 +29,6 @@ During a practice run of the material for this presentation, trying to keep the 
   51:00 Contexts
   55:40 JSON
   58:15 End
+```
+
+(This was before the slides were reorganized a bit, but gives the general idea of the timing.)
