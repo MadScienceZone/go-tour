@@ -4,9 +4,9 @@ Tutorial presentation to introduce the Go programming language.
 This is a work in progress.
 
 Eventually I intend to write a set of lessons to teach Go programming.
-For now, there is a “whirlwind tour” presentation intended to be given in 30-ish minutes
+For now, there is a “whirlwind tour” presentation intended to be given in about an hour
 to provide a basic understanding of what Go is and why it would be worthwhile to continue
-studying it.
+studying it. If needed, some sections can be removed or glossed over to reduce the time.
 
 ## Important Note on Content
 These materials are *not* designed to be stand-alone training materials.
