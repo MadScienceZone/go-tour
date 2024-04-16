@@ -1,14 +1,28 @@
 \documentclass[pdf,t]{beamer}
-\newcommand\REV{v1.1.1}
+\newcommand\REV{v1.2.0}
 % Berlin Berkeley Warsaw
 \newcommand\z[1]{\texttt{#1}}
 \usepackage{listings}
+\usepackage{ifthen}
+\usepackage{qrcode}
 \usepackage{xeCJK}
+\usepackage{tikz}
+\usepackage{suffix}
 \newcommand\identifier[1]{{\color{green!70!black}\z{#1}}}
 \newcommand\keyword[1]{{\color{blue}\z{#1}}}
 \newcommand\blocked[1]{{\color{red}\z{#1}}}
 \newcommand\gostring[1]{{\color{orange!90!black}\z{#1}}}
-\newcommand\playground[1]{\framebox{\color{gray}\z{https://go.dev/play/#1}}}
+\newcommand\playground[2]{\framebox{\footnotesize\color{gray}\z{https://go.dev/play/#1}}\ifthenelse{\equal{#2}{}}{}{\hfill\framebox{\footnotesize\color{gray}\z{https://tinyurl.com/#2}}}}
+\newcommand\playgroundQR[1]{%
+	\begin{tikzpicture}[remember picture, overlay]%
+		\node[above left,yshift=.5cm] at (current page.south east) {\qrcode[height=0.5in]{https://go.dev/play/#1}};%
+	\end{tikzpicture}%
+}
+\WithSuffix\newcommand\playgroundQR*[4]{%
+	\begin{tikzpicture}[remember picture, overlay]%
+		\node[#1] at (current page.#2) {\qrcode[#3]{https://go.dev/play/#4}};%
+	\end{tikzpicture}%
+}
 \lstset{
     language=Go,
     basicstyle=\ttfamily,
@@ -212,7 +226,7 @@ type Shape struct {
 \end{frame}
 
 \begin{frame}[fragile]{Hello, World}
-\playground{}
+\playground{}{}\playgroundQR{}
 \begin{lstlisting}
 /* Standard-issue "Hello, World" program in Go */
 
@@ -314,8 +328,8 @@ const (
 \end{frame}
 
 \begin{frame}[fragile]{``Factored'' Notation and iota}
-\begin{onlyenv}<1->
-\playground{p/LSHu1VKUz20}
+\playground{p/LSHu1VKUz20}{gofactor}
+\playgroundQR{p/LSHu1VKUz20}
 \begin{lstlisting}
 type MessageType byte
 const (
@@ -325,7 +339,6 @@ const (
     UrgentMessage MessageType = 3
 )
 \end{lstlisting}
-\end{onlyenv}
 \begin{onlyenv}<2>
 \begin{lstlisting}
 const (
@@ -348,7 +361,8 @@ const (
 \end{onlyenv}
 \end{frame}
 \begin{frame}[fragile]{``Factored'' Notation and iota Expressions}
-\playground{p/LSHu1VKUz20}
+\playground{p/LSHu1VKUz20}{gofactor}
+\playgroundQR{p/LSHu1VKUz20}
 \begin{lstlisting}
 type MessageType byte
 const (
@@ -430,6 +444,9 @@ for i := range 10 {
 for i, v := range []int{1, 4, -3, 153} {
 }
 
+for key, val := range map[int]int{1:2, 3:4, ...} {
+}
+
 // loop over data received from channel
 for item := range channel {
 }
@@ -460,7 +477,8 @@ fmt.Println("I know", len(things), "things.")
 \end{frame}
 
 \begin{frame}[fragile]{Arrays}
-    \playground{p/rexZjp6SdKD}
+\playground{p/rexZjp6SdKD}{goarrays}
+\playgroundQR*{left}{east}{height=0.5in}{p/rexZjp6SdKD}
     \begin{itemize}
         \item Or you can specify an array literal value to use in an expression or assign to a variable
 \begin{lstlisting}
@@ -480,7 +498,8 @@ fmt.Println("I know", len(things), "things.")
 \end{frame}
 
 \begin{frame}[fragile]{Slices}
-    \playground{p/rexZjp6SdKD}
+    \playground{p/rexZjp6SdKD}{goarrays}
+\playgroundQR*{left}{east}{height=0.5in}{p/rexZjp6SdKD}
     \begin{itemize}
         \item Specify a range \z{[}$n$\z{:}$m$\z{]} as the index into an array to get a subset of the array values
             with indices from $n$ to $m-1$.
@@ -497,7 +516,8 @@ fmt.Println("Some things:", things[:])
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Slices}
-    \playground{p/rexZjp6SdKD}
+    \playground{p/rexZjp6SdKD}{goarrays}
+\playgroundQR*{left}{east}{height=0.5in}{p/rexZjp6SdKD}
     \begin{itemize}
         \item Dimensionless ``arrays'': \z{[]}\keyword{int}.
         \item Actually a ``view'' into an underlying array.
@@ -518,7 +538,8 @@ fmt.Println(len(things), things)
 \end{frame}
 
 \begin{frame}[fragile]{Slices}
-    \playground{p/rexZjp6SdKD}
+    \playground{p/rexZjp6SdKD}{goarrays}
+\playgroundQR*{left}{east}{height=0.5in}{p/rexZjp6SdKD}
     \begin{itemize}
         \item Can also specify a slice of values as a literal.
     \end{itemize}
@@ -539,7 +560,8 @@ fmt.Println(lowPrimes)
 \end{frame}
 
 \begin{frame}[fragile]{Maps}
-\playground{p/Bfs6kEUKwve}
+\playground{p/Bfs6kEUKwve}{go-kvmap}
+\playgroundQR*{left,yshift=-.5in}{east}{height=0.5in}{p/Bfs6kEUKwve}
 \begin{lstlisting}
 var Ages map[string]int
 Ages = make(map[string]int)
@@ -554,7 +576,8 @@ fmt.Println(Ages)
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Maps}
-\playground{p/Bfs6kEUKwve}
+\playground{p/Bfs6kEUKwve}{go-kvmap}
+\playgroundQR*{left,yshift=-.5in}{east}{height=0.5in}{p/Bfs6kEUKwve}
 \begin{lstlisting}
 Ages := map[string]int{
     "Alice": 14,
@@ -575,7 +598,8 @@ for name, age := range Ages {
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Maps}
-\playground{p/Bfs6kEUKwve}
+\playground{p/Bfs6kEUKwve}{go-kvmap}
+\playgroundQR*{left,yshift=-.5in}{east}{height=0.5in}{p/Bfs6kEUKwve}
 \begin{onlyenv}<1->
 \begin{lstlisting}
 aliceAge := Ages["Alice"]      // 14
@@ -649,7 +673,8 @@ func main() {
 
 \subsection{Object Oriented Features}
 \begin{frame}[fragile]{Structures}
-\playground{p/TClHUvPovi0}
+\playground{p/TClHUvPovi0}{go-obj-oop}
+\playgroundQR{p/TClHUvPovi0}
 \begin{lstlisting}
 type Triangle struct {
     Base   int
@@ -687,7 +712,8 @@ t3 := Triangle{
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
-\playground{p/TClHUvPovi0}
+\playground{p/TClHUvPovi0}{go-obj-oop}
+\playgroundQR{p/TClHUvPovi0}
 \begin{lstlisting}
 func Area(t Triangle) float64 {
     return (float64(t.Base) * 
@@ -706,7 +732,8 @@ t2 = Translate(t2, +3, -2)
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
-\playground{p/TClHUvPovi0}
+\playground{p/TClHUvPovi0}{go-obj-oop}
+\playgroundQR{p/TClHUvPovi0}
 \begin{lstlisting}
 func Area(t Triangle) float64 {
     return (float64(t.Base) * 
@@ -724,7 +751,8 @@ Translate(&t2, +3, -2)
 \end{frame}
 
 \begin{frame}[fragile]{Method Functions}
-\playground{p/TClHUvPovi0}
+\playground{p/TClHUvPovi0}{go-obj-oop}
+\playgroundQR{p/TClHUvPovi0}
 \begin{lstlisting}
 func (t Triangle) Area() float64 {
     return (float64(t.Base) * 
@@ -742,7 +770,8 @@ t2.Translate(+3, -2)
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{lstlisting}
 type BaseShape struct {
     X int
@@ -759,7 +788,8 @@ func (s BaseShape) ReferencePoint() (int, int) {
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Triangle struct {
     BaseShape
@@ -775,7 +805,8 @@ func (t Triangle) Area() float64 {
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Rectangle struct {
     BaseShape
@@ -790,7 +821,8 @@ func (r Rectangle) Area() float64 {
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{lstlisting}
 // Regular Polygons
 type Polygon struct {
@@ -808,7 +840,8 @@ func (p Polygon) Area() float64 {
 \end{frame}
 
 \begin{frame}[fragile]{Composition}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Circle struct {
     BaseShape
@@ -821,7 +854,8 @@ func (c Circle) Area() float64 {
 \end{lstlisting}
 \end{frame}
 \begin{frame}[fragile]{Composition}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{lstlisting}
 c := Circle{
     BaseShape: BaseShape{
@@ -843,7 +877,8 @@ fmt.Println(c.X, c.Y, c.Radius, c.Area())
 \end{frame}
 
 \begin{frame}[fragile]{Polymorphism}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{onlyenv}<1>
 \begin{lstlisting}
 shapes := []Shape{
@@ -879,7 +914,8 @@ for i, shape := range shapes {
 \end{frame}
 
 \begin{frame}[fragile]{Polymorphism via Interfaces}
-\playground{p/qp2nc6gywLr}
+\playground{p/qp2nc6gywLr}{go-obj-comp}
+\playgroundQR{p/qp2nc6gywLr}
 \begin{lstlisting}
 type Shape interface {
     Area() float64
@@ -900,7 +936,8 @@ func reportArea(s Shape) {
 	\end{center}
 \end{frame}
 \begin{frame}[fragile]{Type Assertions}
-\playground{p/dy952C3yZUX}
+\playground{p/dy952C3yZUX}{go-assert}
+\playgroundQR{p/dy952C3yZUX}
 \begin{onlyenv}<1-2>
 \begin{lstlisting}
 f(42)
@@ -942,7 +979,8 @@ func f(mystery any) {    // any == interface{}
 \end{frame}
 
 \begin{frame}[fragile]{Type Switch}
-\playground{p/dy952C3yZUX}
+\playground{p/dy952C3yZUX}{go-assert}
+\playgroundQR{p/dy952C3yZUX}
 \begin{lstlisting}
 f(42)
 f("hello")
@@ -972,7 +1010,8 @@ func f(mystery any) {    // any == interface{}
 	\end{center}
 \end{frame}
 \begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
-\playground{p/FJNbOcNYI8-}
+\playground{p/FJNbOcNYI8-}{go-routine}
+\playgroundQR{p/FJNbOcNYI8-}
 \begin{lstlisting}
 func countdown() {
     for i := 10; i >= 0; i-- {
@@ -993,7 +1032,8 @@ func main() {
 \end{frame}
 
 \begin{frame}[fragile]{Goroutines---Calling a Function in the ``Background''}
-\playground{p/FJNbOcNYI8-}
+\playground{p/FJNbOcNYI8-}{go-routine}
+\playgroundQR{p/FJNbOcNYI8-}
 \begin{lstlisting}
 func countdown() {
     for i := 10; i >= 0; i-- {
@@ -1014,7 +1054,8 @@ func main() {
 
 
 \begin{frame}[fragile]{Channels}
-\playground{p/sFuhOuwVS6c}
+\playground{p/sFuhOuwVS6c}{go-channel}
+\playgroundQR{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte)
 \end{lstlisting}
@@ -1031,7 +1072,8 @@ fmt.Println("Read", x, "from channel")
 \end{frame}
 
 \begin{frame}[fragile]{Channels}
-\playground{p/sFuhOuwVS6c}
+\playground{p/sFuhOuwVS6c}{go-channel}
+\playgroundQR{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte)
 \end{lstlisting}
@@ -1047,7 +1089,8 @@ fmt.Println("Read", x, "from channel")
 \end{frame}
 
 \begin{frame}[fragile]{Channels}
-\playground{p/sFuhOuwVS6c}
+\playground{p/sFuhOuwVS6c}{go-channel}
+\playgroundQR{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte)
 go func(c chan byte) {
@@ -1061,7 +1104,8 @@ ch <- 42
 \end{frame}
 
 \begin{frame}[fragile]{Buffered Channels}
-\playground{p/sFuhOuwVS6c}
+\playground{p/sFuhOuwVS6c}{go-channel}
+\playgroundQR{p/sFuhOuwVS6c}
 \begin{lstlisting}
 ch := make(chan byte, 1)
 \end{lstlisting}
@@ -1093,6 +1137,7 @@ int sel = 0;
 FD_ZERO(&read_handles);
 FD_ZERO(&write_handles);
 FD_ZERO(&err_handles);
+
 /* set bits for handles you're interested in */
 t.tv_sec = 1;
 t.tv_usec = 0;
@@ -1144,7 +1189,8 @@ default:
 	\end{center}
 \end{frame}
 \begin{frame}[fragile]{Global ID Generation (Na\"\i ve)}
-\playground{p/iOxsFX\_TSaa}
+\playground{p/iOxsFX\_TSaa}{go-idgen}
+\playgroundQR{p/iOxsFX_TSaa}
 \begin{lstlisting}
 type GameState struct {
     NextMessageID int
@@ -1172,7 +1218,8 @@ var gameserver GameState
 \end{frame}
 
 \begin{frame}[fragile]{Global ID Generation (Mutex)}
-\playground{p/iOxsFX\_TSaa}
+\playground{p/iOxsFX\_TSaa}{go-idgen}
+\playgroundQR{p/iOxsFX_TSaa}
 \begin{onlyenv}<1->
 \begin{lstlisting}
 type GameState struct {
@@ -1223,7 +1270,8 @@ client.ID = gameServer.GetNextID()
 \end{frame}
 
 \begin{frame}[fragile]{Global ID Generation (Mutex)}
-\playground{p/iOxsFX\_TSaa}
+\playground{p/iOxsFX\_TSaa}{go-idgen}
+\playgroundQR{p/iOxsFX_TSaa}
 \begin{lstlisting}
 func main() {
     var gameServer GameState
@@ -1253,7 +1301,8 @@ func main() {
 	\end{center}
 \end{frame}
 \begin{frame}[fragile]{Global ID Generation (Channel)}
-\playground{p/mRfglxbH-kI}
+\playground{p/mRfglxbH-kI}{go-id-chan}
+\playgroundQR{p/mRfglxbH-kI}
 \begin{lstlisting}
 func serveMessageIDs(c chan<- int) {
     var id int
@@ -1289,7 +1338,8 @@ client.ID = <-IDSource
 	\end{center}
 \end{frame}
 \begin{frame}[fragile]{Contexts}
-\playground{p/cPSNhVfS8r-}
+\playground{p/cPSNhVfS8r-}{go-context}
+\playgroundQR{p/cPSNhVfS8r-}
 \begin{lstlisting}
 func collectData(stream <-chan string) error {
     for {
@@ -1309,7 +1359,8 @@ collectData(stream)
 \end{frame}
 
 \begin{frame}[fragile]{Contexts}
-\playground{p/cPSNhVfS8r-}
+\playground{p/cPSNhVfS8r-}{go-context}
+\playgroundQR{p/cPSNhVfS8r-}
 \begin{lstlisting}
 func collectData(ctx context.Context, 
                  stream <-chan string) error {
@@ -1329,7 +1380,8 @@ func collectData(ctx context.Context,
 \end{frame}
 
 \begin{frame}[fragile]{Contexts}
-\playground{p/cPSNhVfS8r-}
+\playground{p/cPSNhVfS8r-}{go-context}
+\playgroundQR{p/cPSNhVfS8r-}
 \begin{lstlisting}
 // caller
 
@@ -1344,7 +1396,8 @@ if err := collectData(ctx, stream); err != nil {
 \end{frame}
 
 \begin{frame}[fragile]{Contexts}
-\playground{p/cPSNhVfS8r-}
+\playground{p/cPSNhVfS8r-}{go-context}
+\playgroundQR{p/cPSNhVfS8r-}
 \begin{lstlisting}
 func collectData(ctx context.Context, 
                  stream <-chan string) error {
@@ -1371,7 +1424,8 @@ func collectData(ctx context.Context,
 \end{frame}
 \subsection{JSON Encoding Made Easy}
 \begin{frame}[fragile]{JSON}
-\playground{p/\_KcMkqhhzbZ}
+\playground{p/\_KcMkqhhzbZ}{go-json}
+\playgroundQR{p/_KcMkqhhzbZ}
 \begin{lstlisting}
 import "encoding/json"
 type User struct {
@@ -1390,7 +1444,8 @@ data := User{
 \end{frame}
 
 \begin{frame}[fragile]{JSON}
-\playground{p/\_KcMkqhhzbZ}
+\playground{p/\_KcMkqhhzbZ}{go-json}
+\playgroundQR{p/_KcMkqhhzbZ}
 \begin{lstlisting}
 import "encoding/json"
 
